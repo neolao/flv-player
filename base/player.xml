@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<movie framerate="24" version="7" width="320" height="240">
+	<frame>
+		<library>
+			<clip id="background"/>
+			<video id="video"/>
+			<clip id="videoDisplay">
+				<frame>
+					<place id="video" name="video"/>
+				</frame>
+			</clip>
+		</library>
+		<place id="background" name="background_mc" x="0" y="0" depth="1" />
+		<place id="videoDisplay" name="video_mc" x="0" y="0" depth="2" />
+	</frame>
+</movie>

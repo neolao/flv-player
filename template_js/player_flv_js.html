@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Player FLV JS</title>
+		<style type="text/css">
+		html {
+			background-color: #7f7f8e;
+			color: #fff;
+		}
+		body {
+			background: #fff;
+			color: #000;
+			border: solid 5px #9494A5;
+			padding: 1em;
+			margin: 1em 2em 1em 2em;
+		}
+		h1 {
+			text-align: center;
+			border-bottom: solid 2px #ccc;
+		}
+		
+		/* ==================== Player ==================== */
+		#player {
+			background-color: #e9f6ff;
+			color: #000;
+			height: 20px;
+			width: 200px;
+			border: solid 1px #ccc;
+		}
+		#player .button {
+			width: 20px;
+			height: 20px;
+			background-repeat: no-repeat;
+			background-position: 2px 2px;
+			float: left;
+		}
+		#player .button a {
+			display: block;
+			height: 20px;
+			text-indent: -100em;
+			overflow: hidden;
+		}
+		#player .timeline {
+			position: relative;
+		}
+		#player .timeline a {
+			position: absolute;
+			left: 40px;
+			display: block;
+			height: 20px;
+			width: 40px;
+			text-indent: -100em;
+			overflow: hidden;
+			background-image: url(images/control_slider.png);
+		}
+		#player .timeline a:hover {
+			background-image: url(images/control_slider_blue.png);
+		}
+		#player .play {
+			background-image: url(images/control_play.png);
+		}
+		#player .play:hover {
+			background-image: url(images/control_play_blue.png);
+		}
+		#player .pause {
+			background-image: url(images/control_pause.png);
+			display: none;
+		}
+		#player .pause:hover {
+			background-image: url(images/control_pause_blue.png);
+		}
+		#player .stop {
+			background-image: url(images/control_stop.png);
+		}
+		#player .stop:hover {
+			background-image: url(images/control_stop_blue.png);
+		}
+		
+		</style>
+        <script type="text/javascript">
+        	var myListener = new Object();
+        	
+        	/**
+        	 * Initialisation
+        	 */
+        	myListener.onInit = function()
+        	{
+        		
+        	};
+        	/**
+        	 * onClick event on the video
+        	 */
+        	myListener.onClick = function()
+        	{
+        		var total = document.getElementById("info_click").innerHTML;
+        		document.getElementById("info_click").innerHTML = Number(total)+1;
+        	};
+        	/**
+        	 * onKeyUp event on the video
+        	 */
+        	myListener.onKeyUp = function(pKey)
+        	{
+        		document.getElementById("info_key").innerHTML = pKey;
+        	};
+        	/**
+        	 * onComplete event
+        	 */
+        	myListener.onFinished = function()
+        	{
+        		alert("finished");
+        	};
+        	/**
+        	 * Update
+        	 */
+        	myListener.onUpdate = function()
+        	{
+        		document.getElementById("info_playing").innerHTML = this.isPlaying;
+            	document.getElementById("info_url").innerHTML = this.url;
+            	document.getElementById("info_volume").innerHTML = this.volume;
+            	document.getElementById("info_position").innerHTML = this.position;
+            	document.getElementById("info_duration").innerHTML = this.duration;
+            	document.getElementById("info_buffer").innerHTML = this.bufferLength + "/" + this.bufferTime;
+            	document.getElementById("info_bytes").innerHTML = this.bytesLoaded + "/" + this.bytesTotal + " (" + this.bytesPercent + "%)";
+            	
+            	var isPlaying = (this.isPlaying == "true");
+           		document.getElementById("playerplay").style.display = (isPlaying)?"none":"block";
+           		document.getElementById("playerpause").style.display = (isPlaying)?"block":"none";
+           		
+           		var timelineWidth = 160;
+            	var sliderWidth = 40;
+            	var sliderPositionMin = 40;
+            	var sliderPositionMax = sliderPositionMin + timelineWidth - sliderWidth;
+            	var sliderPosition = sliderPositionMin + Math.round((timelineWidth - sliderWidth) * this.position / this.duration);
+            	
+            	if (sliderPosition < sliderPositionMin) {
+            		sliderPosition = sliderPositionMin;
+            	}
+            	if (sliderPosition > sliderPositionMax) {
+            		sliderPosition = sliderPositionMax;
+            	}
+            	
+            	document.getElementById("playerslider").style.left = sliderPosition+"px";
+        	};
+        	
+        	function getFlashObject()
+        	{
+        		return document.getElementById("myFlash");
+        	}
+            function play()
+            {
+            	if (myListener.position == 0) {
+	                getFlashObject().SetVariable("method:setUrl", "http://download.neolao.com/videos/KyodaiNoGilga.flv");
+                }
+                getFlashObject().SetVariable("method:play", "");
+            }
+            function pause()
+            {
+                getFlashObject().SetVariable("method:pause", "");
+            }
+            function stop()
+            {
+                getFlashObject().SetVariable("method:stop", "");
+            }
+            function setWidth()
+            {
+            	var width = document.getElementById("inputWidth").value;
+            	getFlashObject().width = width+"px";
+            }
+            function setHeight()
+            {
+            	var height = document.getElementById("inputHeight").value;
+            	getFlashObject().height = height+"px";
+            }
+            function setPosition()
+            {
+            	var position = document.getElementById("inputPosition").value;
+            	getFlashObject().SetVariable("method:setPosition", position);
+            }
+            function setVolume()
+            {
+            	var volume = document.getElementById("inputVolume").value;
+            	getFlashObject().SetVariable("method:setVolume", volume);
+            }
+            function loadImage()
+            {
+            	var url = document.getElementById("inputImage").value;
+            	var depth = document.getElementById("inputImageDepth").value;
+            	var verticalAlign = document.getElementById("inputImageVertical").value;
+            	var horizontalAlign = document.getElementById("inputImageHorizontal").value;
+            	
+            	getFlashObject().SetVariable("method:loadMovieOnTop", url+"|"+depth+"|"+verticalAlign+"|"+horizontalAlign);
+            }
+            function unloadImage()
+            {
+            	var depth = document.getElementById("inputUnloadDepth").value;
+            	getFlashObject().SetVariable("method:unloadMovieOnTop", depth);
+            }
+        </script>
+        <!--[if IE]>
+		<script type="text/javascript" event="FSCommand(command,args)" for="myFlash">
+		eval(args);
+		</script>
+		<![endif]-->
+	</head>
+	<body>
+		<h1>Thème JS</h1>
+		<object id="myFlash" type="application/x-shockwave-flash" data="player_flv_js.swf" width="320" height="240">
+			<param name="movie" value="player_flv_js.swf" />
+			<param name="AllowScriptAccess" value="always" />
+			<param name="FlashVars" value="listener=myListener&amp;interval=500&amp;useHandCursor=0&amp;bgcolor=fd9f00&amp;buffer=9" />
+			<p>Texte alternatif</p>
+		</object>
+		<div id="player">
+			<div id="playerplay" class="button play"><a href="javascript:play()" >PLAY</a></div>
+			<div id="playerpause" class="button pause"><a href="javascript:pause()">PAUSE</a></div>
+			<div id="playerstop" class="button stop"><a href="javascript:stop()">STOP</a></div>
+			<div class="timeline"><a id="playerslider" href="#slider">SLIDER</a></div>
+		</div>
+		<h2>Exemples javascript</h2>
+		<form>
+		<ul>
+			<li>Modifier la largeur: <input id="inputWidth" type="text" value="200" size="3"/> <input type="button" value="Modifier" onclick="setWidth()"/></li>
+			<li>Modifier la hauteur: <input id="inputHeight" type="text" value="200" size="3"/> <input type="button" value="Modifier" onclick="setHeight()"/></li>
+			<li>Modifier la position: <input id="inputPosition" type="text" value="10000" size="6"/> <input type="button" value="Modifier" onclick="setPosition()"/></li>
+			<li>Modifier le volume: <input id="inputVolume" type="text" value="100" size="3"/> <input type="button" value="Modifier" onclick="setVolume()"/></li>
+			<li>Charger une image <input id="inputImage" type="text" value="logo.jpg" size="10"/> à la profondeur <input id="inputImageDepth" type="text" value="1" size="1"/>, alignement vertical <input id="inputImageVertical" type="text" value="" size="2"/>, alignement horizontal <input id="inputImageHorizontal" type="text" value="" size="2"/> <input type="button" value="Charger" onclick="loadImage()"/></li>
+			<li>Décharger une image à la profondeur <input id="inputUnloadDepth" type="text" value="1" size="1"/> <input type="button" value="Décharger" onclick="unloadImage()"/></li>
+		</ul>
+		</form>
+		<h2>Informations</h2>
+		<ul>
+			<li>url : <span id="info_url">undefined</span></li>
+			<li>chargement : <span id="info_bytes">undefined</span></li>
+			<li>isPlaying : <span id="info_playing">undefined</span></li>
+			<li>position : <span id="info_position">undefined</span></li>
+			<li>duration : <span id="info_duration">undefined</span></li>
+			<li>tampon : <span id="info_buffer">undefined</span></li>
+			<li>volume : <span id="info_volume">undefined</span></li>
+			<li>click : <span id="info_click">0</span></li>
+			<li>key up : <span id="info_key">undefined</span></li>
+		</ul>
+		
+		<p>Plus d'information sur <a href="http://resources.neolao.com/flash/components/player_flv/templates/js">la page officielle</a>.</p>
+		<p>Icônes par <a href="http://www.famfamfam.com/">famfamfam</a>.</p>
+	</body>
+</html>

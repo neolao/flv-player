@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Player FLV</title>
+		<style type="text/css">
+		html {
+			background-color: #7f7f8e;
+			color: #fff;
+		}
+		body {
+			background: #fff;
+			color: #000;
+			border: solid 5px #9494A5;
+			padding: 1em;
+			margin: 1em 2em 1em 2em;
+		}
+		h1 {
+			text-align: center;
+			border-bottom: solid 2px #ccc;
+		}
+		table {
+			width: 100%;
+			border: solid 1px #666;
+			border-collapse: collapse;
+		}
+		table th {
+			text-align: left;
+			padding: .5em;
+		}
+		table tfoot {
+			display: none;
+		}
+		table tbody td {
+			vertical-align: top;
+			padding: .5em;
+			border-top: solid 1px #666;
+		}
+		table th.description, table th.html {
+			width: 50%;
+		}
+		.code {
+			border: solid 1px #990;
+			background-color: #ffffdd;
+			overflow: auto;
+			margin: 0;
+		}
+		</style>
+		<script type="text/javascript">
+			function play() {
+				document.monFlash.SetVariable("player:jsPlay", "");
+			}
+			function pause() {
+				document.monFlash.SetVariable("player:jsPause", "");
+			}
+			function stop() {
+				document.monFlash.SetVariable("player:jsStop", "");
+			}
+		</script>
+	</head>
+	<body>
+		<h1>Thème normal</h1>
+		<table summary="Des exemples d'affichage du lecteur">
+			<thead>
+				<tr><th>Aperçu</th><th class="description">Description</th><th class="html">Code HTML</th></tr>
+			</thead>
+			<tfoot>
+				<tr><td>Aperçu</td><td>La description de l'exemple</td><td>Le code HTML de l'exemple</td></tr>
+			</tfoot>
+			<tbody>
+				<tr>
+					<td>
+						<object id="monFlash" type="application/x-shockwave-flash" data="player_flv.swf" width="320" height="240">
+							<param name="movie" value="player_flv.swf" />
+							<param name="FlashVars" value="flv=http://download.neolao.com/videos/KyodaiNoGilga.flv&amp;width=320&amp;height=240" />
+						</object>
+					</td>
+					<td>
+						Affichage par défaut, sans options.
+						<br/>Contrôles Javascript:
+						<br/><a href="javascript:play()">PLAY</a> - <a href="javascript:pause()">PAUSE</a> - <a href="javascript:stop()">STOP</a>
+					</td>
+					<td>
+						<pre class="code">&lt;object id="monFlash" type="application/x-shockwave-flash" data="player_flv.swf" width="320" height="240"&gt;
+	&lt;param name="movie" value="player_flv.swf" /&gt;
+	&lt;param name="FlashVars" value="flv=KyodaiNoGilga.flv&amp;amp;width=320&amp;amp;height=240" /&gt;
+&lt;/object&gt;</pre><br/>
+						<pre class="code">&lt;script language="Javascript"&gt;
+function play() {
+	document.monFlash.SetVariable("player:jsPlay", "");
+}
+function pause() {
+	document.monFlash.SetVariable("player:jsPause", "");
+}
+function stop() {
+	document.monFlash.SetVariable("player:jsStop", "");
+}
+&lt;/script&gt;</pre>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<object type="application/x-shockwave-flash" data="player_flv.swf" width="350" height="200">
+							<param name="movie" value="player_flv.swf" />
+							<param name="FlashVars" value="flv=http://download.neolao.com/videos/KyodaiNoGilga.flv&amp;width=350&amp;height=200&amp;showstop=1&amp;showvolume=1&amp;title=1 2 3\nsoleil&amp;bgcolor1=8282B0&amp;bgcolor2=72729A&amp;playercolor=72729A&amp;buttoncolor=C69717&amp;buttonovercolor=E9B21A&amp;slidercolor1=CD9D17&amp;slidercolor2=B08614&amp;sliderovercolor=E9B21A&amp;loadingcolor=E9B21A" />
+						</object>
+					</td>
+					<td>Changement de taille et de couleur. Utilisation d'un titre avant le lancement de la vidéo.</td>
+					<td>
+						<pre class="code">&lt;object type="application/x-shockwave-flash" data="player_flv.swf" width="350" height="200"&gt;
+	&lt;param name="movie" value="player_flv.swf" /&gt;
+	&lt;param name="FlashVars" value="flv=KyodaiNoGilga.flv&amp;amp;width=350&amp;amp;height=200&amp;amp;showstop=1&amp;amp;showvolume=1&amp;amp;title=1 2 3\nsoleil&amp;amp;bgcolor1=8282B0&amp;amp;bgcolor2=72729A&amp;amp;playercolor=72729A&amp;amp;buttoncolor=C69717&amp;amp;buttonovercolor=E9B21A&amp;amp;slidercolor1=CD9D17&amp;amp;slidercolor2=B08614&amp;amp;sliderovercolor=E9B21A&amp;amp;loadingcolor=E9B21A" /&gt;
+&lt;/object&gt;</pre>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<object type="application/x-shockwave-flash" data="player_flv.swf" width="320" height="240">
+							<param name="movie" value="player_flv.swf" />
+							<param name="FlashVars" value="flv=http://download.neolao.com/videos/KyodaiNoGilga.flv&amp;width=320&amp;height=240&amp;showtime=1&amp;srt=1&amp;skin=player_flv_skin001.jpg&amp;margin=10&amp;startimage=rorobong.jpg&amp;playercolor=ffffff&amp;buttoncolor=333333&amp;buttonovercolor=999999&amp;slidercolor1=333333&amp;slidercolor2=0&amp;sliderovercolor=999999&amp;loadingcolor=0" />
+						</object>
+					</td>
+					<td>Un autre exemple avec un skin, une image de départ, l'affichage du temps et l'utilisation des sous-titres.</td>
+					<td>
+						<pre class="code">&lt;object type="application/x-shockwave-flash" data="player_flv.swf" width="320" height="240"&gt;
+	&lt;param name="movie" value="player_flv.swf" /&gt;
+	&lt;param name="FlashVars" value="flv=KyodaiNoGilga.flv&amp;amp;width=320&amp;amp;height=240&amp;amp;showtime=1&amp;amp;srt=1&amp;amp;skin=player_flv_skin001.jpg&amp;amp;margin=10&amp;amp;startimage=rorobong.jpg&amp;amp;playercolor=ffffff&amp;amp;buttoncolor=333333&amp;amp;buttonovercolor=999999&amp;amp;slidercolor1=333333&amp;amp;slidercolor2=0&amp;amp;sliderovercolor=999999&amp;amp;loadingcolor=0" /&gt;
+&lt;/object&gt;</pre>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<object type="application/x-shockwave-flash" data="player_flv.swf" width="320" height="240">
+							<param name="movie" value="player_flv.swf" />
+							<param name="FlashVars" value="config=flv_config.txt" />
+						</object>
+					</td>
+					<td>Utilisation d'un fichier de configuration avec priorité sur les paramètres HTML.<br/> Voir <a href="flv_config.txt">le fichier de configuration en texte</a>.</td>
+					<td>
+						<pre class="code">&lt;object type="application/x-shockwave-flash" data="player_flv.swf" width="320" height="240"&gt;
+	&lt;param name="movie" value="player_flv.swf" /&gt;
+	&lt;param name="FlashVars" value="config=flv_config.txt" /&gt;
+&lt;/object&gt;</pre>
+					</td>
+				</tr>
+				<tr>
+					<td style="background-color:#cc9">
+						<object type="application/x-shockwave-flash" data="player_flv.swf" width="320" height="240">
+							<param name="movie" value="player_flv.swf" />
+							<param name="FlashVars" value="configxml=flv_config.xml" />
+						</object>
+					</td>
+					<td>Même chose en XML.<br/> Voir <a href="flv_config.xml">le fichier de configuration en XML</a>.</td>
+					<td>
+						<pre class="code">&lt;object type="application/x-shockwave-flash" data="player_flv.swf" width="320" height="240"&gt;
+	&lt;param name="movie" value="player_flv.swf" /&gt;
+	&lt;param name="FlashVars" value="configxml=flv_config.xml" /&gt;
+&lt;/object&gt;</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>Plus d'information sur <a href="http://resources.neolao.com/flash/components/player_flv">la page officielle</a>.</p>
+	</body>
+</html>

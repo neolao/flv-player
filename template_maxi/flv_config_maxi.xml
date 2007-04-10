@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<param name="flv" value="http://download.neolao.com/videos/KyodaiNoGilga.flv" />
+	<param name="width" value="320" />
+	<param name="height" value="240" />
+	<param name="bgcolor" value="cccc99" />
+	<param name="playercolor" value="d38c29" />
+	<param name="bgcolor1" value="e79a2d" />
+	<param name="bgcolor2" value="d38c29" />
+	<param name="buttoncolor" value="dddddd" />
+	<param name="buttonovercolor" value="f9bf37" />
+	<param name="slidercolor1" value="dddddd" />
+	<param name="slidercolor2" value="cccccc" />
+	<param name="sliderovercolor" value="f9bf37" />
+	<param name="showstop" value="1" />
+	<param name="showvolume" value="1" />
+	<param name="showtime" value="1" />
+	<param name="srt" value="1" />
+</config>
