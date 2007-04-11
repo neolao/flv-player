@@ -1,18 +1,33 @@
-﻿/** 
- * Thème javascript du lecteur flv
+﻿/*
+Version: MPL 1.1
+
+The contents of this file are subject to the Mozilla Public License
+Version 1.1 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
+http://www.mozilla.org/MPL/
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is flvplayer (http://code.google.com/p/flvplayer/).
+
+The Initial Developer of the Original Code is neolao (neolao@gmail.com).
+*/
+/** 
+ * Template for javascript controls
  * 
  * @author		neolao <neo@neolao.com> 
  * @version 	0.1.1 (29/03/2007) 
- * @link		http://resources.neolao.com/flash/components/player_flv 
- * @license		http://creativecommons.org/licenses/by-sa/2.5/ 
  */ 
 class TemplateJS extends ATemplate
 {
-	// ----------------------------- CONSTANTES --------------------------------
+	// ------------------------------ CONSTANTS --------------------------------
 	
 	// ------------------------------ VARIABLES --------------------------------
 	/**
-	 * L'instance du controleur de la vidéo
+	 * Video instance controller
 	 */
 	public var controller:PlayerDefault;
 	/**
@@ -30,10 +45,10 @@ class TemplateJS extends ATemplate
 	 * Stage listener	 */
 	private var _stageListener:Object;
 	
-	/*============================= CONSTRUCTEUR =============================*/
+	/*============================= CONSTRUCTOR ==============================*/
 	/*========================================================================*/
 	/**
-	 * Initialisation
+	 * Constructor
 	 */
 	public function TemplateJS()
 	{
@@ -68,13 +83,13 @@ class TemplateJS extends ATemplate
 		
 		_root.method.jsInit();
 	}
-	/*======================= FIN = CONSTRUCTEUR = FIN =======================*/
+	/*======================= END = CONSTRUCTOR = END ========================*/
 	/*========================================================================*/
 	
-	/*=========================== METHODES PRIVEES ===========================*/
+	/*=============================== PRIVATE ================================*/
 	/*========================================================================*/
 	/**
-	 * Initialisation du gestionnaire de clavier
+	 * Initialize the key manager
 	 */
 	private function _initKey()
 	{
@@ -86,14 +101,14 @@ class TemplateJS extends ATemplate
 		Key.addListener(o);
 	}
 	/**
-	 * Initialisation de la vidéo
+	 * Initialize the video
 	 */
 	private function _initVideo()
 	{
 		_onResize();
 		
-		// Action au click
-		// Fond noir transparent
+		// Action on click
+		// (transparent background)
 		var vButton:MovieClip;
 		if (!this.video.button_mc) {
 			vButton = this.video.createEmptyMovieClip("button_mc", this.video.getNextHighestDepth());
@@ -172,13 +187,15 @@ class TemplateJS extends ATemplate
 			this.video.endFill();
 		}
 	}
-	/*===================== FIN = METHODES PRIVEES = FIN =====================*/
+	/*========================= END = PRIVATE = END ==========================*/
 	/*========================================================================*/
 	
-	/*========================== METHODES PUBLIQUES ==========================*/
+	/*================================ PUBLIC ================================*/
 	/*========================================================================*/
 	/**
-	 * Send command to javascript	 */
+	 * Send command to javascript
+	 * 
+	 * @param pCommand The javascript command	 */
 	public function sendToJavascript(pCommand:String)
 	{
 		if (System.capabilities.playerType == "ActiveX") {
@@ -215,7 +232,7 @@ class TemplateJS extends ATemplate
 		this.sendToJavascript(_listener+"onInit();");
 	}
 	/**
-	 * Redimensionne la video
+	 * Resize the video
 	 * 
 	 * @param pWidth (optional) La largeur de la vidéo
 	 * @param pHeight (optional) La hauteur de la vidéo
@@ -288,10 +305,10 @@ class TemplateJS extends ATemplate
 		var movie:MovieClip = top.getInstanceAtDepth(pDepth);
 		movie.removeMovieClip();
 	}
-	/*==================== FIN = METHODES PUBLIQUES = FIN ====================*/
+	/*========================== END = PUBLIC = END ==========================*/
 	/*========================================================================*/
 	
-	/*========================= CONTROLES JAVASCRIPT =========================*/
+	/*========================= JAVASCRIPT CONTROLS ==========================*/
 	/*========================================================================*/
 	/**
 	 * Change the FLV's url
@@ -363,6 +380,6 @@ class TemplateJS extends ATemplate
 	{
 		this.unloadAtDepth(Number(pDepth));
 	}
-	/*=================== FIN = CONTROLES JAVASCRIPT = FIN ===================*/
+	/*=================== END = JAVASCRIPT CONTROLS = END ====================*/
 	/*========================================================================*/
 }
