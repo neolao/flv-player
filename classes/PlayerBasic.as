@@ -19,7 +19,7 @@ The
  * Lecteur FLV basique
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.8.1 (25/01/2007) 
+ * @version 	0.9.0 (12/04/2007) 
  */
 class PlayerBasic
 {
@@ -37,6 +37,15 @@ class PlayerBasic
 	/**
 	 * Répéter la vidéo ?	 */
 	private var _loop:Boolean = false;
+	/**
+	 * Indique que c'est un streaming php	 */
+	private var _isPhpStream:Boolean = false;
+	/**
+	 * Les temps dans le FLV	 */
+	private var _times:Array;
+	/**
+	 * Les positions dans le FLV	 */
+	private var _positions:Array;
 	/**
 	 * Le son	 */
 	private var _sound:Sound;
@@ -68,6 +77,11 @@ class PlayerBasic
 		
 		this._initVars();
 		this._initVideo();
+		
+		// PHP streaming
+		if (_root.phpstream == "1") {
+			this._isPhpStream = true;
+		}
 		
 		// Lecture automatique
 		if (_root.autoplay == "1") {
@@ -129,6 +143,9 @@ class PlayerBasic
 		this._ns.onMetaData = function(info:Object){
 			this.parent._videoDuration = (info.duration < 0)?0:info.duration;
 			this.parent._template.resizeVideo(info.width, info.height);
+			
+			this.parent._times = info.keyframes.times;
+			this.parent._positions = info.keyframes.filepositions;
 		};
 		
 		// La zone video du thème affiche le NetStream
@@ -203,7 +220,48 @@ class PlayerBasic
 		if (pPosition > this._videoDuration) {
 			pPosition = this._videoDuration;
 		}
-		this._ns.seek(pPosition);
+		if (this._isPhpStream) {
+			var newPosition:Number = 0;
+			var length:Number = this._times.length;
+			
+			if (pPosition <= _times[0]) {
+				newPosition = _positions[0];
+			} else if (pPosition >= _times[length-1]) {
+				newPosition = _positions[0];
+			} else {
+				var linearSearchTolerance:Number = 40;
+				var startIndex:Number = 0;
+				var endIndex:Number = length;
+				var newStart:Number = 0;
+				var newEnd:Number = 0;
+				
+				// reduce startIndex and endIndex
+				while ((endIndex - startIndex) > linearSearchTolerance) {
+					var newMax:Number = endIndex - startIndex;
+					var k:Number = (newMax>>1);  // diviser par 2 sans reste
+					k = startIndex + k;
+					var timeMiddle:Number = _times[k];
+					//
+					newStart = startIndex;
+					newEnd = k;
+					if (pPosition >= timeMiddle) { newStart = k; newEnd = endIndex; }
+					startIndex = newStart;
+					endIndex = newEnd;
+				}
+				// Search 
+				for (var i:Number = startIndex; i < endIndex; i++) {
+					if (this._times[i] <= pPosition && pPosition < this._times[i+1]) {
+						newPosition = _positions[i];
+						break;
+					}
+				}
+			}
+			newPosition =  (newPosition < 0 ? 0 : newPosition);
+			
+			this._ns.play(this._videoUrl+newPosition);
+		} else {
+			this._ns.seek(pPosition);
+		}
 	}
 	/**
 	 * Récupère la position de la tête de lecture
