@@ -17,7 +17,6 @@ if (file_exists($filename)) {
 	fseek($file, $position);
 	while (!feof($file)) {
 		echo fread($file, 16384);
-		//echo fread($file, filesize($filename)); 
 	}
 	fclose($file);
 } else {
