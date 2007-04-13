@@ -2,7 +2,7 @@
  * Thème par défaut du lecteur flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.0.1 (10/04/2007) 
+ * @version 	1.1.0 (13/04/2007) 
  * @link		http://resources.neolao.com/flash/components/player_flv 
  * @license		http://creativecommons.org/licenses/by-sa/2.5/ 
  */ 

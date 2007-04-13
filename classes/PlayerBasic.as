@@ -16,58 +16,60 @@ The Original Code is flvplayer (http://code.google.com/p/flvplayer/).
 The
 */
 /**
- * Lecteur FLV basique
+ * Basic FLV player
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.9.0 (12/04/2007) 
+ * @version 	0.9.0 (13/04/2007) 
  */
 class PlayerBasic
 {
+	// ------------------------------ CONSTANTS --------------------------------
+	
 	// ------------------------------ VARIABLES --------------------------------
 	private var _nc:NetConnection;
 	private var _ns:NetStream;
 	
 	/**
-	 * L'instance du thème utilisé
+	 * Template instances
 	 */
 	private var _template:ATemplate;
 	/**
-	 * Le temps de mise en tampon, en seconde	 */
+	 * The buffer time in milliseconds	 */
 	private var _bufferTime:Number = 5;
 	/**
-	 * Répéter la vidéo ?	 */
+	 * Loop the video	 */
 	private var _loop:Boolean = false;
 	/**
-	 * Indique que c'est un streaming php	 */
+	 * Use php stream	 */
 	private var _isPhpStream:Boolean = false;
 	/**
-	 * Les temps dans le FLV	 */
+	 * keyframes.times in the FLV	 */
 	private var _times:Array;
 	/**
-	 * Les positions dans le FLV	 */
+	 * keyframes.filepositions in the FLV	 */
 	private var _positions:Array;
 	/**
-	 * Le son	 */
+	 * The sound	 */
 	private var _sound:Sound;
 	/**
-	 * La durée de la vidéo	 */
+	 * The video duration	 */
 	private var _videoDuration:Number;
 	/**
-	 * L'adresse du flv	 */
+	 * The video URL	 */
 	private var _videoUrl:String;
 	/**
-	 * Indique si c'est la première lecture	 */
+	 * The video is played for the first time	 */
 	private var _firstPlay:Boolean = false;
 	/**
-	 * Indique si on est en lecture	 */
+	 * The video is playing	 */
 	public var isPlaying:Boolean = false;
 	
-	/*============================= CONSTRUCTEUR =============================*/
+	/*============================= CONSTRUCTOR ==============================*/
 	/*========================================================================*/
 	/**
-	 * Initialisation
+	 * Constructor
 	 * 
-	 * @param pTemplate L'instance du thème à utiliser
+	 * @param pTemplate The template instance
 	 */
 	public function PlayerBasic(pTemplate:ATemplate)
 	{
@@ -83,7 +85,7 @@ class PlayerBasic
 			this._isPhpStream = true;
 		}
 		
-		// Lecture automatique
+		// Auto play
 		if (_root.autoplay == "1") {
 			this._template.playRelease();
 		} else {
@@ -93,13 +95,13 @@ class PlayerBasic
 			this._template.stopRelease();
 		}
 	}
-	/*======================= FIN = CONSTRUCTEUR = FIN =======================*/
+	/*======================= END = CONSTRUCTOR = END ========================*/
 	/*========================================================================*/
 	
-	/*=========================== METHODES PRIVEES ===========================*/
+	/*=============================== PRIVATE ================================*/
 	/*========================================================================*/
 	/**
-	 * Initialisation des variables 
+	 * Initialize variables 
 	 */
 	private function _initVars()
 	{
@@ -114,7 +116,7 @@ class PlayerBasic
 		}
 	}
 	/**
-	 * Initialisation de la video
+	 * Initialize video
 	 */
 	private function _initVideo()
 	{
@@ -128,7 +130,7 @@ class PlayerBasic
 			switch(info.code){
 				case "NetStream.Buffer.Empty":
 					if(Math.abs(Math.floor(this.time) - Math.floor(this.parent._videoDuration)) < 2){
-						// la vidéo est terminée
+						// The video is finished
 						this.parent._template.stopRelease();
 						if(this.parent._loop){
 							this.parent._template.playRelease();
@@ -148,23 +150,23 @@ class PlayerBasic
 			this.parent._positions = info.keyframes.filepositions;
 		};
 		
-		// La zone video du thème affiche le NetStream
+		// The video object displays the NetStream
 		this._template.video.video.attachVideo(this._ns);
 		
-		// Lissage
+		// Smooth effect
 		this._template.video.video.smoothing = true;
 		
-		// Gestion du son
+		// Sound manager
 		this._sound = new Sound();
 		this._sound.attachSound(this._template.video.video);
 	}
-	/*===================== FIN = METHODES PRIVEES = FIN =====================*/
+	/*========================= END = PRIVATE = END ==========================*/
 	/*========================================================================*/
 	
-	/*========================== METHODES PUBLIQUES ==========================*/
+	/*================================ PUBLIC ================================*/
 	/*========================================================================*/
 	/**
-	 * Jouer	 */
+	 * Play	 */
 	public function play()
 	{
 		// Si le NetConnection et le NetStream ne sont pas encore créés
@@ -192,26 +194,32 @@ class PlayerBasic
 		this.isPlaying = false;
 	}
 	/**
-	 * Stopper
+	 * Stop
 	 */
 	public function stop()
 	{
-		this._ns.seek(0);
-		if (this.isPlaying) {
+		if (this._isPhpStream) {
+			this._ns.play(this._videoUrl+"0");
+			this._ns.seek(0);
 			this._ns.pause();
+		} else {
+			this._ns.seek(0);
+			if (this.isPlaying) {
+				this._ns.pause();
+			}
 		}
 		this.isPlaying = false;
 		
-		// Détruire le chargement de la vidéo
+		// Stop the video loading
 		if (_root.loadonstop == 0) {
 			delete this._ns;
 			delete this._nc;
 		}
 	}
 	/**
-	 * Déplacer la tête de lecture
+	 * Change the video position
 	 * 
-	 * @param pPosition La position	 */
+	 * @param pPosition The position	 */
 	public function setPosition(pPosition:Number)
 	{
 		if (pPosition < 0) {
@@ -224,11 +232,12 @@ class PlayerBasic
 			var newPosition:Number = 0;
 			var length:Number = this._times.length;
 			
-			if (pPosition <= _times[0]) {
-				newPosition = _positions[0];
-			} else if (pPosition >= _times[length-1]) {
-				newPosition = _positions[0];
+			if (pPosition <= this._times[0]) {
+				newPosition = this._positions[0];
+			} else if (pPosition >= this._times[length-1]) {
+				newPosition = this._positions[0];
 			} else {
+				// binary search (recherche dichotomique)
 				var linearSearchTolerance:Number = 40;
 				var startIndex:Number = 0;
 				var endIndex:Number = length;
@@ -238,17 +247,16 @@ class PlayerBasic
 				// reduce startIndex and endIndex
 				while ((endIndex - startIndex) > linearSearchTolerance) {
 					var newMax:Number = endIndex - startIndex;
-					var k:Number = (newMax>>1);  // diviser par 2 sans reste
+					var k:Number = (newMax>>1);  // divide by 2 without the remainder
 					k = startIndex + k;
-					var timeMiddle:Number = _times[k];
-					//
+					var timeMiddle:Number = this._times[k];
 					newStart = startIndex;
 					newEnd = k;
 					if (pPosition >= timeMiddle) { newStart = k; newEnd = endIndex; }
 					startIndex = newStart;
 					endIndex = newEnd;
 				}
-				// Search 
+				// linear search 
 				for (var i:Number = startIndex; i < endIndex; i++) {
 					if (this._times[i] <= pPosition && pPosition < this._times[i+1]) {
 						newPosition = _positions[i];
@@ -256,17 +264,20 @@ class PlayerBasic
 					}
 				}
 			}
-			newPosition =  (newPosition < 0 ? 0 : newPosition);
+			newPosition = (newPosition < 0)?0:newPosition;
 			
 			this._ns.play(this._videoUrl+newPosition);
+			if (!this.isPlaying) {
+				this._ns.pause();
+			}
 		} else {
 			this._ns.seek(pPosition);
 		}
 	}
 	/**
-	 * Récupère la position de la tête de lecture
+	 * Get the video position
 	 * 
-	 * @return La position	 */
+	 * @return The position	 */
 	public function getPosition():Number
 	{
 		if (this._ns.time > this._videoDuration) {
@@ -280,37 +291,37 @@ class PlayerBasic
 		}
 	}
 	/**
-	 * Récupère la durée de la vidéo
+	 * Get the video duration
 	 * 
-	 * @return La durée	 */
+	 * @return The duration	 */
 	public function getDuration():Number
 	{
 		return this._videoDuration;
 	}
 	/**
-	 * Récupère la taille du tampon
+	 * Get the buffer length
 	 * 
-	 * @return La taille du tampon	 */
+	 * @return The buffer length	 */
 	public function getBufferLength():Number
 	{
 		return this._ns.bufferLength;
 	}
 	/**
-	 * Récupère la taille maximale du tampon
+	 * Get the buffer time
 	 * 
-	 * @return La taille maximale du tampon	 */
+	 * @return The buffer time	 */
 	public function getBufferTime():Number
 	{
 		return this._ns.bufferTime;
 	}
 	/**
-	 * Récupère les informations sur le chargement de la video
+	 * Get the video loading informations
 	 * 
-	 * - loaded: Le nombre de bytes chargés
-	 * - total: Le nombre de bytes à chargés
-	 * - precent: Le pourcentage entre les 2
+	 * - loaded: bytes loaded
+	 * - total: bytes total
+	 * - percent: percent
 	 * 
-	 * @return L'objet contenant les informations
+	 * @return Informations object
 	 */
 	public function getLoading():Object
 	{
@@ -319,6 +330,6 @@ class PlayerBasic
 		var percent:Number = Math.round(loaded / total * 100); 
 		return {loaded:loaded, total:total, percent:percent};
 	}
-	/*==================== FIN = METHODES PUBLIQUES = FIN ====================*/
+	/*========================== END = PUBLIC = END ==========================*/
 	/*========================================================================*/
 }
