@@ -20,7 +20,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * 
  * @author		neolao <neo@neolao.com> 
  * @version 	0.9.0 (17/12/2006) 
- * @license		@license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
+ * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMulti extends ATemplate
 {

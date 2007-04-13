@@ -20,7 +20,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * 
  * @author		neolao <neo@neolao.com> 
  * @version 	1.1.0 (13/04/2007) 
- * @license		@license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
+ * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateDefault extends ATemplate
 {
