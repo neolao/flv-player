@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Thème par défaut du lecteur flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.1.0 (13/04/2007) 
+ * @version 	1.1.1 (14/04/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateDefault extends ATemplate
@@ -416,8 +416,6 @@ class TemplateDefault extends ATemplate
 	 */
 	private function _initVideo()
 	{
-		//super._initVideo();
-		
 		// Dimension du conteneur vidéo
 		this.video.clear();
 		this.video.beginFill(0);
@@ -429,11 +427,6 @@ class TemplateDefault extends ATemplate
 		this.video._yscale = 100;
 		this.video._x = this._videoMargin;
 		this.video._y = this._videoMargin;
-		
-		/*this.video._width -= this._videoMargin*2;
-		this.video._height -= this._videoMargin*2;
-		this.video._x += this._videoMargin;
-		this.video._y += this._videoMargin;*/
 		
 		// Initialisation du buffer
 		this._initBuffering();
@@ -1093,6 +1086,11 @@ class TemplateDefault extends ATemplate
 		this._enableButton(this._playerPause, true);
 		this._enableButton(this._playerStop, true);
 		
+		// Hide the control bar
+		this._player._visible = false;
+		
+		// Add mouse listener
+		Mouse.removeListener(this._mouse);
 		Mouse.addListener(this._mouse);
 	}
 	/**
@@ -1115,6 +1113,9 @@ class TemplateDefault extends ATemplate
 		this._enableButton(this._playerStop, false);
 		this._enableButton(this._playerPause, false, true);
 		this._enableButton(this._playerPlay, true);
+		
+		// Remove mouse listener
+		Mouse.removeListener(this._mouse);
 	}
 	/**
 	 * Affichage du chargement
