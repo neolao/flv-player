@@ -1,10 +1,25 @@
-﻿/** 
+﻿/*
+Version: MPL 1.1
+
+The contents of this file are subject to the Mozilla Public License
+Version 1.1 (the "License"); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at
+http://www.mozilla.org/MPL/
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is flvplayer (http://code.google.com/p/flvplayer/).
+
+The Initial Developer of the Original Code is neolao (neolao@gmail.com).
+*/
+/** 
  * Thème fourre tout du lecteur flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.8.3 (25/01/2007) 
- * @link		http://resources.neolao.com/flash/components/player_flv 
- * @license		http://creativecommons.org/licenses/by-sa/2.5/ 
+ * @version 	0.9.0 (13/04/2007) 
  */ 
 class TemplateMaxi extends ATemplate
 {
