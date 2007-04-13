@@ -19,7 +19,8 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Thème mini du lecteur flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.2.0 (13/04/2007) 
+ * @version 	0.2.0 (13/04/2007)
+ * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMini extends ATemplate
 {

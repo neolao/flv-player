@@ -19,7 +19,8 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template for javascript controls
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.2 (13/04/2007) 
+ * @version 	0.2 (13/04/2007)
+ * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateJS extends ATemplate
 {
