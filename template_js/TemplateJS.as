@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template for javascript controls
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.2 (13/04/2007)
+ * @version 	0.2.0 (15/04/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateJS extends ATemplate
@@ -357,6 +357,16 @@ class TemplateJS extends ATemplate
 	public function set setPosition(pPosition:String)
 	{
 		this.controller.setPosition(Number(pPosition)/1000);
+	}
+	/**
+	 * Change the video's type:
+	 *   - 0: progressive download
+	 *   - 1: php streaming
+	 * 
+	 * @param pType The type	 */
+	public function set setVideoType(pType:String)
+	{
+		this.controller["_isPhpStream"] = (pType == "1");
 	}
 	/**
 	 * Load jpg or swf on top of the video
