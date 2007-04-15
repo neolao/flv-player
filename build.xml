@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="FLV Player" basedir=".">
 
-    <property name="mtasc.dir" value="${basedir}/../mtasc" />
+    <property name="mtasc.dir" value="${basedir}/mtasc" />
 
     <target name="template_default" depends="setup" description="Build template_default">
     	<property name="template.dir" value="${basedir}/template_default" />
