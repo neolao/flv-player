@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Thème par défaut du lecteur flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.1.1 (14/04/2007)
+ * @version 	1.1.2 (16/04/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateDefault extends ATemplate
