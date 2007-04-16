@@ -16,10 +16,10 @@ The Original Code is flvplayer (http://code.google.com/p/flvplayer/).
 The Initial Developer of the Original Code is neolao (neolao@gmail.com).
 */
 /** 
- * Thème pour plusieurs flv
+ * Template multi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.9.0 (17/12/2006) 
+ * @version 	0.9.1 (16/04/2007) 
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMulti extends ATemplate
@@ -306,6 +306,10 @@ class TemplateMulti extends ATemplate
 	 * La couleur du text de la playlist
 	 */
 	private var _playlistTextColor:Number = 0xffffff;
+	/**
+	 * La dernière valeur du buffer
+	 */
+	private var _lastBuffer:Number = 0;
 	
 	/*============================= CONSTRUCTEUR =============================*/
 	/*========================================================================*/
@@ -584,8 +588,8 @@ class TemplateMulti extends ATemplate
 		this._setVar("_shortcut", 				[_root.shortcut, pConfig.shortcut], 			"Boolean");
 		this._setVar("_videoBackgroundColor", 	[_root.videobgcolor, pConfig.videobgcolor], 	"Color");
 		this._setVar("_titleColor", 			[_root.titlecolor, pConfig.titlecolor], 		"Color");
-		this._setVar("_playlistTextColor", 		[_root.playlisttxtcolor, pConfig.playlisttxtcolor], "Color");
-		this._setVar("_volume", 				[_root.volume, pConfig.volume], 				"Color");
+		this._setVar("_playlistTextColor", 		[_root.playlisttextcolor, pConfig.playlisttextcolor], "Color");
+		this._setVar("_volume", 				[_root.volume, pConfig.volume], 				"Number");
 	}
 	/**
 	 * Initialisation du buffering
@@ -1526,16 +1530,24 @@ class TemplateMulti extends ATemplate
 		}
 		this._playerSlider.bar_mc._x = position;
 		
+		// Buffer message
 		var buffer:Number = Math.min(Math.round(this.controller.getBufferLength()/this.controller.getBufferTime() * 100), 100);
-		if(buffer != 100 && this.controller.isPlaying && this.controller.getDuration() - this.controller.getPosition() > this.controller.getBufferTime()){
+		if( (this.controller.getDuration() == undefined && this.controller.isPlaying) || (buffer != 100 && this.controller.isPlaying && this.controller.getDuration() - this.controller.getPosition() > this.controller.getBufferTime()) ){
 			var message:String = this._bufferMessage;
 			message = message.split("_n_").join(String(buffer)+"%");
 			
 			this._buffering.message_txt.text = message;
 			this._buffering._visible = true;
+			
+			if (this.controller.getBufferLength() >= this._lastBuffer) {
+				
+			} else {
+				this._buffering._visible = false;
+			}
 		}else{
 			this._buffering._visible = false;
 		}
+		this._lastBuffer = this.controller.getBufferLength();
 		
 		if (this.controller.isPlaying) {
 			this.video.title_txt._visible = false;
@@ -1578,7 +1590,7 @@ class TemplateMulti extends ATemplate
 		// On redimensinone la vidéo à la taille du flash en gardant les proportions
 		var originWidth:Number = (pWidth !== undefined)?pWidth:this.video.video.width;
 		var originHeight:Number = (pHeight !== undefined)?pHeight:this.video.video.height;
-		var newWidth:Number = this._swfWidth;
+		var newWidth:Number = this._swfWidth - this._videoMargin*2;
 		var newHeight:Number = newWidth * originHeight / originWidth;
 		var swfWidth:Number = this._swfWidth - this._videoMargin*2;
 		var swfHeight:Number = this._swfHeight - this._videoMargin*2;
@@ -1617,6 +1629,7 @@ class TemplateMulti extends ATemplate
 		}
 		
 		this.updatePlaylist(true);
+		this.controller.setVolume(this._volume);
 	}
 	/**
 	 * Action sur le bouton Pause

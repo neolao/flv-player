@@ -162,6 +162,10 @@ class TemplateDefault extends ATemplate
 	 * Le volume maximum	 */
 	private var _volumeMax:Number = 200;
 	/**
+	 * La dernière valeur du buffer
+	 */
+	private var _lastBuffer:Number = 0;
+	/**
 	 * L'instance du controleur de la vidéo
 	 */
 	public var controller:PlayerDefault;
@@ -1008,13 +1012,21 @@ class TemplateDefault extends ATemplate
 		}
 		this._playerSlider.bar_mc._x = position;
 		
+		// Buffer message
 		var buffer:Number = Math.min(Math.round(this.controller.getBufferLength()/this.controller.getBufferTime() * 100), 100);
-		if(buffer != 100 && this.controller.isPlaying && this.controller.getDuration() - this.controller.getPosition() > this.controller.getBufferTime()){
+		if( (this.controller.getDuration() == undefined && this.controller.isPlaying) || (buffer != 100 && this.controller.isPlaying && this.controller.getDuration() - this.controller.getPosition() > this.controller.getBufferTime()) ){
 			this._buffering.message_txt.text = "buffering "+buffer+"%";
 			this._buffering._visible = true;
+			
+			if (this.controller.getBufferLength() >= this._lastBuffer) {
+				
+			} else {
+				this._buffering._visible = false;
+			}
 		}else{
 			this._buffering._visible = false;
 		}
+		this._lastBuffer = this.controller.getBufferLength();
 		
 		if (this.controller.isPlaying) {
 			this.video.title_txt._visible = false;

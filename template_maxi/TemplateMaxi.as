@@ -1431,7 +1431,7 @@ class TemplateMaxi extends ATemplate
 			this._playerSlider.bar_mc._x = 0;
 		}
 		
-		// buffer
+		// Buffer message
 		var buffer:Number = Math.min(Math.round(this.controller.getBufferLength()/this.controller.getBufferTime() * 100), 100);
 		if( (this.controller.getDuration() == undefined && this.controller.isPlaying) || (buffer != 100 && this.controller.isPlaying && this.controller.getDuration() - this.controller.getPosition() > this.controller.getBufferTime()) ){
 			var message:String = this._bufferMessage;
