@@ -19,7 +19,8 @@ The
  * Basic FLV player
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.9.0 (13/04/2007) 
+ * @version 	0.9.0 (13/04/2007)
+ * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */
 class PlayerBasic
 {
@@ -137,7 +138,7 @@ class PlayerBasic
 						}
 					}
 					break;
-				case 'NetStream.Buffer.Full' :
+				case "NetStream.Buffer.Full":
 					this.parent._template.resizeVideo();
 					break;
 			}

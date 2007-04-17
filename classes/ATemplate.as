@@ -19,7 +19,8 @@ The
  * Classe abstraite pour un thème
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.7.3 (25/09/2006) 
+ * @version 	0.7.3 (25/09/2006)
+ * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */
 class ATemplate
 {

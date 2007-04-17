@@ -19,7 +19,8 @@ The
  * Lecteur de plusieurs FLV
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.2.9 (25/09/2006) 
+ * @version 	0.2.10 (17/04/2007)
+ * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr 
  */
 class PlayerMulti extends PlayerDefault
 {
@@ -129,6 +130,10 @@ class PlayerMulti extends PlayerDefault
 						// la vidéo est terminée
 						this.parent._template.nextRelease();
 					}
+					break;
+				case "NetStream.Buffer.Full":
+					this.parent._template.resizeVideo();
+					break;
 			}
 		};
 		this._ns.onMetaData = function(info:Object){

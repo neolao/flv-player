@@ -19,7 +19,8 @@ The
  * Lecteur FLV normal
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.8.1 (04/11/2006) 
+ * @version 	0.8.1 (04/11/2006)
+ * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */
 class PlayerDefault extends PlayerBasic
 {
