@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Thème fourre tout du lecteur flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.9.1 (17/04/2007)
+ * @version 	1.0.0 (17/04/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMaxi extends ATemplate
@@ -180,15 +180,29 @@ class TemplateMaxi extends ATemplate
 	 * Le volume maximum	 */
 	private var _volumeMax:Number = 200;
 	/**
-	 * Action au click sur la vidéo
+	 * Interval for onclick	 */
+	private var _onClickInterval:Number = -1;
+	/**
+	 * Action on click
 	 * 
-	 * - "playpause" : basculer entre play et pause
-	 * - "none" : ne rien faire
-	 * - url : l'url de destination	 */
+	 * - "playpause" : Toggle play / pause
+	 * - "none" : do nothing
+	 * - url : open new url	 */
 	private var _onClick:String = "playpause";
 	/**
-	 * La cible du onclick	 */
+	 * The onclick's target	 */
 	private var _onClickTarget:String = "_self";
+	/**
+	 * Action on double click
+	 * 
+	 * - "none" : do nothing
+	 * - "fullscreen" : Toggle fullscreen / normal view
+	 * - "playpause" : Toggle play / pause
+	 * - url : open new url	 */
+	private var _onDoubleClick:String = "none";
+	/**
+	 * The double click's target	 */
+	private var _onDoubleClickTarget:String = "_self";
 	/**
 	 * Taille de la police du titre	 */
 	private var _titleSize:Number = 20;
@@ -258,6 +272,12 @@ class TemplateMaxi extends ATemplate
 	/**
 	 * Indique que la vidéo est en position STOP	 */
 	private var _stopped:Boolean = true;
+	/**
+	 * Mouse display type:
+	 *   - "always" : The mouse is always visible
+	 *   - "autohide" : The mouse is hidden after 1500 milliseconds
+	 *   - "never" : The mouse is never visible	 */
+	private var _showMouse:String = "always";
 	/**
 	 * L'instance du controleur de la vidéo
 	 */
@@ -540,6 +560,9 @@ class TemplateMaxi extends ATemplate
 		this._setVar("_showFullscreen", 	[_root.showfullscreen, pConfig.showfullscreen], "Boolean");
 		this._setVar("_showSwitchSubtitles",[_root.showswitchsubtitles, pConfig.showswitchsubtitles], "Boolean");
 		this._setVar("_titleColor", 		[_root.titlecolor, pConfig.titlecolor], 	"Color");
+		this._setVar("_onDoubleClick", 		[_root.ondoubleclick, pConfig.ondoubleclick], "String");
+		this._setVar("_onDoubleClickTarget", [_root.ondoubleclicktarget, pConfig.ondoubleclicktarget], "String");
+		this._setVar("_showMouse", 			[_root.showmouse, pConfig.showmouse], 		"String");
 	}
 	/**
 	 * Initialisation du buffering
@@ -616,8 +639,7 @@ class TemplateMaxi extends ATemplate
 		this.video.video._y = 0;
 		
 		
-		// Action au click
-		// Fond noir transparent
+		// Action on click (transparent background)
 		var vButton:MovieClip;
 		if (!this.video.button_mc) {
 			vButton = this.video.createEmptyMovieClip("button_mc", this.video.getNextHighestDepth());
@@ -631,27 +653,19 @@ class TemplateMaxi extends ATemplate
 		vButton.lineTo(this._swfWidth - this._videoMargin*2, 0);
 		vButton.endFill();
 		vButton.tabEnabled = false;
+		vButton.useHandCursor = false;
 		
-		switch (this._onClick) {
-			case "playpause":
-				vButton.onRelease = this.delegate(this, function()
-				{
-					if (this.controller.isPlaying) {
-						this.pauseRelease();
-					} else {
-						this.playRelease();
-					}
-				});
-				vButton.useHandCursor = false;
-				break;
-			case "none":
-				break;
-			default:
-				vButton.onRelease = this.delegate(this, function()
-				{
-					getURL(this._onClick, this._onClickTarget);
-				});
-		}
+		vButton.onRelease = this.delegate(this, function()
+		{
+			if (this._onClickInterval != -1) {
+				clearInterval(this._onClickInterval);
+				this._onClickInterval = -1;
+				this._videoOnDoubleClick();
+			} else {
+				clearInterval(this._onClickInterval);
+				this._onClickInterval = setInterval(this, "_videoOnClick", 180);
+			}
+		});
 		
 		// Un masque pour pas que la vidéo ne dépasse sur la marge
 		var vMask:MovieClip;
@@ -678,6 +692,51 @@ class TemplateMaxi extends ATemplate
 		
 		// Initialisation du buffer
 		this._initBuffering();
+	}
+	/**
+	 * The user click on the video	 */
+	private function _videoOnClick()
+	{
+		// Reset onclick interval
+		clearInterval(this._onClickInterval);
+		this._onClickInterval = -1;
+		
+		// Actions
+		switch (this._onClick) {
+			case "playpause":
+				if (this.controller.isPlaying) {
+					this.pauseRelease();
+				} else {
+					this.playRelease();
+				}
+				break;
+			case "none":
+				break;
+			default:
+				getURL(this._onClick, this._onClickTarget);
+		}
+	}
+	/**
+	 * The user double click on the video	 */
+	private function _videoOnDoubleClick()
+	{
+		// Actions
+		switch (this._onDoubleClick) {
+			case "fullscreen":
+				this.fullscreenRelease();
+				break;
+			case "playpause":
+				if (this.controller.isPlaying) {
+					this.pauseRelease();
+				} else {
+					this.playRelease();
+				}
+				break;
+			case "none":
+				break;
+			default:
+				getURL(this._onDoubleClick, this._onDoubleClickTarget);
+		}
 	}
 	/**
 	 * Initialisation de la police	 */
@@ -853,6 +912,10 @@ class TemplateMaxi extends ATemplate
 		}
 		super._initPlayer();
 		
+		if (this._showMouse == "never") {
+			Mouse.hide();
+		}
+		
 		if (this._showPlayer !== "never") {
 			this._player._y = this._swfHeight - PLAYER_HEIGHT - this._videoMargin;
 			this._player._x = this._videoMargin;
@@ -867,6 +930,10 @@ class TemplateMaxi extends ATemplate
 			
 			this._mouse = new Object();
 			this._mouse.onMouseMove = this.delegate(this, function(){
+				if (this._showMouse != "never") {
+					Mouse.show();
+				}
+				
 				this._player._visible = true;
 				clearInterval(this._playerItv);
 				this._playerItv = setInterval(this, "_playerInterval", this._playerTimeout);
@@ -880,6 +947,9 @@ class TemplateMaxi extends ATemplate
 	 */ 
 	private function _playerInterval()
 	{
+		if (this._showMouse == "autohide") {
+			Mouse.hide();
+		}
 		this._player._visible = false;
 		clearInterval(this._playerItv);
 	}
