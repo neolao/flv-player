@@ -15,11 +15,12 @@ The Original Code is flvplayer (http://code.google.com/p/flvplayer/).
 
 The Initial Developer of the Original Code is neolao (neolao@gmail.com).
 */
+import flash.external.*;
 /** 
  * Template for javascript controls
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.2.0 (15/04/2007)
+ * @version 	0.3.0 (04/05/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateJS extends ATemplate
@@ -67,6 +68,11 @@ class TemplateJS extends ATemplate
 		_stageListener = new Object();
 		_stageListener.onResize = this.delegate(this, _onResize);
 		Stage.addListener(_stageListener);
+		
+		// Use ExternalInterface
+		if (_root.useexternalinterface) {
+			getURL("javascript:"+_listener+"oooupdate=function(o){eval(o);};void(0);");
+		}
 		
 		// Interval update
 		if (_root.interval) {
@@ -199,7 +205,9 @@ class TemplateJS extends ATemplate
 	 * @param pCommand The javascript command	 */
 	public function sendToJavascript(pCommand:String)
 	{
-		if (System.capabilities.playerType == "ActiveX") {
+		if (_root.useexternalinterface) {
+			ExternalInterface.call(_listener+"oooupdate", pCommand);
+		} else if (System.capabilities.playerType == "ActiveX") {
 			fscommand("update", pCommand);
 		} else {
 			getURL("javascript:"+pCommand);
