@@ -20,7 +20,7 @@ import flash.external.*;
  * Template for javascript controls
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.3.0 (04/05/2007)
+ * @version 	0.3.1 (07/05/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateJS extends ATemplate
@@ -46,6 +46,9 @@ class TemplateJS extends ATemplate
 	/**
 	 * Stage listener	 */
 	private var _stageListener:Object;
+	/**
+	 * The init feedback is launched	 */
+	private var _isInit:Boolean = false;
 	
 	/*============================= CONSTRUCTOR ==============================*/
 	/*========================================================================*/
@@ -87,8 +90,6 @@ class TemplateJS extends ATemplate
 	{
 		_root.method = new TemplateJS();
 		var player:PlayerBasic = new PlayerDefault(_root.method);
-		
-		_root.method.jsInit();
 	}
 	/*======================= END = CONSTRUCTOR = END ========================*/
 	/*========================================================================*/
@@ -146,6 +147,13 @@ class TemplateJS extends ATemplate
 	 */
 	private function _enterFrame()
 	{
+		// Run the init feedback for the first update
+		if (!_isInit) {
+			jsInit();
+			_isInit = true;
+			return;
+		}
+		
 		var loading:Object = this.controller.getLoading();
 		
 		_setProperty("bytesTotal", loading.total);
