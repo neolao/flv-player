@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Thème par défaut du lecteur flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.1.3 (17/04/2007)
+ * @version 	1.1.4 (17/05/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateDefault extends ATemplate
@@ -1014,20 +1014,18 @@ class TemplateDefault extends ATemplate
 		
 		// Buffer message
 		var buffer:Number = Math.min(Math.round(this.controller.getBufferLength()/this.controller.getBufferTime() * 100), 100);
-		if( (this.controller.getDuration() == undefined && this.controller.isPlaying && buffer != 100) || (buffer != 100 && this.controller.isPlaying && this.controller.getDuration() - this.controller.getPosition() > this.controller.getBufferTime()) ){
-			// if the duration is not defined, the video is playing and the buffer is not to 100
-			// if the video is not at the end
+		if (!this.controller.streamPlaying && buffer >= this._lastBuffer && this.controller.getDuration() != undefined && buffer != 100) {
 			this._buffering.message_txt.text = "buffering "+buffer+"%";
-			
-			if (buffer >= this._lastBuffer) {
-				this._buffering._visible = true;
-			} else {
-				this._buffering._visible = false;
-			}
-		}else{
+			this._buffering._visible = true;
+		} else {
 			this._buffering._visible = false;
 		}
 		this._lastBuffer = buffer;
+		
+		/*//debug
+		this._buffering.message_txt.text = "buffer: "+buffer+"%, position: "+this.controller.getPosition()+", duration: "+this.controller.getDuration();
+		this._buffering._visible = true;
+		//*/
 		
 		if (this.controller.isPlaying) {
 			this.video.title_txt._visible = false;
@@ -1129,6 +1127,10 @@ class TemplateDefault extends ATemplate
 		
 		// Remove mouse listener
 		Mouse.removeListener(this._mouse);
+		clearInterval(this._playerItv);
+		
+		// Show the control bar
+		this._player._visible = true;
 	}
 	/**
 	 * Affichage du chargement
