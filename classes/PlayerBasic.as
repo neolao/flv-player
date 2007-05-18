@@ -62,8 +62,8 @@ class PlayerBasic
 	 * The video is played for the first time	 */
 	private var _firstPlay:Boolean = false;
 	/**
-	 * The video stream is playing	 */
-	public var streamPlaying:Boolean = false;
+	 * The video stream is started	 */
+	public var streamStarted:Boolean = false;
 	/**
 	 * The video is playing	 */
 	public var isPlaying:Boolean = false;
@@ -177,9 +177,9 @@ class PlayerBasic
 	{
 		var newPosition:Number = this.getPosition();
 		if (newPosition !== this._timeTemp) {
-			this.streamPlaying = true;
+			this.streamStarted = true;
 		} else {
-			this.streamPlaying = false;
+			this.streamStarted = false;
 		}
 		
 		this._timeTemp = newPosition;

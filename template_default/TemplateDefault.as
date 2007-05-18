@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Thème par défaut du lecteur flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.1.4 (17/05/2007)
+ * @version 	1.1.4 (18/05/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateDefault extends ATemplate
@@ -1014,7 +1014,7 @@ class TemplateDefault extends ATemplate
 		
 		// Buffer message
 		var buffer:Number = Math.min(Math.round(this.controller.getBufferLength()/this.controller.getBufferTime() * 100), 100);
-		if (!this.controller.streamPlaying && buffer >= this._lastBuffer && this.controller.getDuration() != undefined && buffer != 100) {
+		if (!this.controller.streamStarted && buffer >= this._lastBuffer && this.controller.getDuration() != undefined && buffer != 100) {
 			this._buffering.message_txt.text = "buffering "+buffer+"%";
 			this._buffering._visible = true;
 		} else {
