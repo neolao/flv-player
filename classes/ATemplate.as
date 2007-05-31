@@ -25,8 +25,8 @@ The
 class ATemplate
 {
 	// ----------------------------- CONSTANTES --------------------------------
-	static var SWF_MINWIDTH:Number = 160;
-	static var SWF_MINHEIGHT:Number = 120;
+	static var SWF_MINWIDTH:Number = 20;
+	static var SWF_MINHEIGHT:Number = 20;
 	
 	// ------------------------------ VARIABLES --------------------------------
 	/**
