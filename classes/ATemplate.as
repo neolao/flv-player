@@ -19,7 +19,7 @@ The
  * Classe abstraite pour un thème
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.7.3 (25/09/2006)
+ * @version 	0.7.4 (11/06/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */
 class ATemplate
@@ -170,15 +170,17 @@ class ATemplate
 	 */
 	public function delegate(pTarget:Object, pFunc:Function):Function
 	{
-		var f:Function = function()
-		{
+		var f:Function = function(){
 			var target = arguments.callee.target;
 			var func = arguments.callee.func;
-			return func.apply(target);
+			var args = arguments.callee.args.concat(arguments);
+
+			return func.apply(target, args);
 		};
- 
-		f.target = pTarget;
-		f.func = pFunc;
+
+		f.target = arguments.shift(); // pTarget
+		f.func = arguments.shift(); // pFunc
+		f.args = arguments; // pArg1, pArg2, ...
  
 		return f;
 	}

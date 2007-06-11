@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template multi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.9.2 (17/04/2007) 
+ * @version 	1.0.0 (11/06/2007) 
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMulti extends ATemplate
@@ -129,6 +129,10 @@ class TemplateMulti extends ATemplate
 	 * La barre de lecture
 	 */
 	private var _playerSlider:MovieClip;
+	/**
+	 * The Fullscreen button
+	 */
+	private var _playerFullscreen:MovieClip;
 	/**
 	 * L'interval du lecteur pour la fermeture
 	 */
@@ -310,6 +314,22 @@ class TemplateMulti extends ATemplate
 	 * La dernière valeur du buffer
 	 */
 	private var _lastBuffer:Number = 0;
+	/**
+	 * Fullscreen button display
+	 */
+	private var _showFullscreen:Boolean = false;
+	/**
+	 * Fullscreen flag
+	 */
+	private var _isFullscreen:Boolean = false;
+	/**
+	 * The slider margin left
+	 */
+	private var _marginSlider:Number = 0;
+	/**
+	 * Memorise stage parameters when fullscreen is off
+	 */
+	private var _stageNormalParams:Object;
 	
 	/*============================= CONSTRUCTEUR =============================*/
 	/*========================================================================*/
@@ -355,13 +375,31 @@ class TemplateMulti extends ATemplate
 			vMarginSlider += VOLUME_WIDTH;
 			vSeparators.push(VOLUME_WIDTH);
 		}
+		// Fullscreen button
+		if (this._showFullscreen) {
+			vMarginSlider += VOLUME_WIDTH;
+			vSeparators.push(VOLUME_WIDTH);
+		}
 		this._initPlayerTime();
 		if (this._showTime > 0) {
 			vMarginSlider += this._playerTime._width + 10;
 			vSeparators.push(this._playerTime._width + 10);
 		}
+		this._marginSlider = vMarginSlider;
 		this._initPlayerSlider(vMarginSlider);
 		this._createSeparators(vSeparators);
+		
+		// Initialize Fullscreen events
+		var fullscreenListener:Object = new Object();
+		fullscreenListener.onFullScreen = this.delegate(this, function(pFull:Boolean)
+		{
+			if (!this._isFullscreen) {
+				this._onStageFullscreen();
+			} else {
+				this._onStageNormal();
+			}
+		});
+		Stage.addListener(fullscreenListener);
 	}
 	/**
 	 * Lancé par mtasc
@@ -496,7 +534,7 @@ class TemplateMulti extends ATemplate
 			this._addShortcut(40, this.delegate(this, function()
 			{
 				if (this.controller.hasNext) {
-					this.nextRelease();
+					this.nextRelease(true);
 				}
 			}));
 			
@@ -590,6 +628,7 @@ class TemplateMulti extends ATemplate
 		this._setVar("_titleColor", 			[_root.titlecolor, pConfig.titlecolor], 		"Color");
 		this._setVar("_playlistTextColor", 		[_root.playlisttextcolor, pConfig.playlisttextcolor], "Color");
 		this._setVar("_volume", 				[_root.volume, pConfig.volume], 				"Number");
+		this._setVar("_showFullscreen", 	    [_root.showfullscreen, pConfig.showfullscreen], "Boolean");
 	}
 	/**
 	 * Initialisation du buffering
@@ -670,9 +709,14 @@ class TemplateMulti extends ATemplate
 		this.video._x = this._videoMargin;
 		this.video._y = this._videoMargin;
 		
-		// Action au click
-		// Fond noir transparent
-		var vButton:MovieClip = this.video.createEmptyMovieClip("button_mc", this.video.getNextHighestDepth());
+		// Action on click (transparent background)
+		var vButton:MovieClip;
+		if (!this.video.button_mc) {
+			vButton = this.video.createEmptyMovieClip("button_mc", this.video.getNextHighestDepth());
+		} else {
+			vButton = this.video.button_mc;
+		}
+		vButton.clear();
 		vButton.beginFill(0, 0);
 		vButton.lineTo(0, this.video._height);
 		vButton.lineTo(this.video._width, this.video._height);
@@ -846,6 +890,7 @@ class TemplateMulti extends ATemplate
 			this._initPlayerStop();
 			this._initPlayerNext();
 			this._initPlayerVolume();
+			this._initPlayerFullscreen();
 			
 			this._mouse = new Object();
 			this._mouse.onMouseMove = this.delegate(this, function(){
@@ -870,8 +915,10 @@ class TemplateMulti extends ATemplate
 	 */
 	private function _initPlayerBackground()
 	{
-		this._playerBackground = this._player.createEmptyMovieClip("background_mc", this._player.getNextHighestDepth()); 
-		
+		if (!this._playerBackground) {
+			this._playerBackground = this._player.createEmptyMovieClip("background_mc", this._player.getNextHighestDepth()); 
+		}
+		this._playerBackground.clear();
 		this._playerBackground.beginFill(this._playerColor);
 		this._playerBackground.lineTo(0, PLAYER_HEIGHT);
 		this._playerBackground.lineTo(this.video._width, PLAYER_HEIGHT);
@@ -1016,7 +1063,9 @@ class TemplateMulti extends ATemplate
 		this._playlist.play = function(pIndex:String)
 		{
 			this.parent.controller.setIndex(Number(pIndex));
-			this.parent.playRelease();
+			this.parent.stopRelease();
+			clearInterval(this.parent._videoDelayItv);
+			this.parent._videoDelayItv = setInterval(this.parent, "playRelease", this.parent._videoDelay);
 			this.parent._playlist._visible = false;
 		};
 		
@@ -1222,7 +1271,7 @@ class TemplateMulti extends ATemplate
 			}
 				
 			// action
-			this._playerNext.area_mc.onRelease = this.delegate(this, this.nextRelease);
+			this._playerNext.area_mc.onRelease = this.delegate(this, this.nextRelease, true);
 			
 			// icone
 			this._playerNext.icon_mc.beginFill(this._buttonColor);
@@ -1342,6 +1391,52 @@ class TemplateMulti extends ATemplate
 		delete this._playerVolume.onEnterFrame;
 	}
 	/**
+	 * Initialize the Fullscreen button
+	 */
+	private function _initPlayerFullscreen()
+	{
+		if (this._showFullscreen) {
+			this._playerFullscreen = this._player.createEmptyMovieClip("fullscren_btn", this._player.getNextHighestDepth()); 
+			this._initButton(this._playerFullscreen);
+			
+			this._playerFullscreen._x = BUTTON_WIDTH;
+			if (this._showOpen) {
+				this._playerFullscreen._x += BUTTON_WIDTH;
+			}
+			if (this._showPrevious) {
+				this._playerFullscreen._x += BUTTON_WIDTH;
+			}
+			if (this._showStop) {
+				this._playerFullscreen._x += BUTTON_WIDTH;
+			}
+			if (this._showNext) {
+				this._playerFullscreen._x += BUTTON_WIDTH;
+			}
+			if (this._showVolume) {
+				this._playerFullscreen._x += BUTTON_WIDTH;
+			}
+			
+			this._playerFullscreen.area_mc.onRelease = this.delegate(this, this.fullscreenRelease); 
+			
+			// icone
+			this._playerFullscreen.icon_mc.lineStyle(1, this._buttonColor, 100);
+			this._playerFullscreen.icon_mc.lineTo(0, 12);
+			this._playerFullscreen.icon_mc.lineTo(12, 12);
+			this._playerFullscreen.icon_mc.lineTo(12, 0);
+			this._playerFullscreen.icon_mc.lineTo(0, 0);
+			
+			this._playerFullscreen.icon_mc.lineStyle(2, this._buttonColor, 100);
+			this._playerFullscreen.icon_mc.moveTo(6, 4);
+			this._playerFullscreen.icon_mc.lineTo(9, 4);
+			this._playerFullscreen.icon_mc.lineTo(9, 7);
+			this._playerFullscreen.icon_mc.moveTo(9, 4);
+			this._playerFullscreen.icon_mc.lineTo(4, 9);
+			
+			this._playerFullscreen.icon_mc._y = PLAYER_HEIGHT/2 - this._playerFullscreen.icon_mc._height/2 + 1;
+			this._playerFullscreen.icon_mc._x = BUTTON_WIDTH/2 - this._playerFullscreen.icon_mc._width/2 + 1;
+		}
+	}
+	/**
 	 * Initialisation du bouton Time
 	 */
 	private function _initPlayerTime()
@@ -1364,6 +1459,9 @@ class TemplateMulti extends ATemplate
 				this._playerTime._x += BUTTON_WIDTH;
 			}
 			if (this._showVolume) {
+				this._playerTime._x += VOLUME_WIDTH;
+			}
+			if (this._showFullscreen) {
 				this._playerTime._x += VOLUME_WIDTH;
 			}
 			
@@ -1422,7 +1520,14 @@ class TemplateMulti extends ATemplate
 	 */
 	private function _initPlayerSlider(pMargin:Number)
 	{
-		this._playerSlider = this._player.createEmptyMovieClip("slider_mc", this._player.getNextHighestDepth());
+		var vDepth:Number;
+		if (this._playerSlider) {
+			vDepth = this._playerSlider.getDepth();
+			this._playerSlider.removeMovieClip();
+		} else {
+			vDepth = this._player.getNextHighestDepth();
+		}
+		this._playerSlider = this._player.createEmptyMovieClip("slider_mc", vDepth);
 		
 		// calcul de la taille
 		var vMargin:Number = pMargin;
@@ -1575,6 +1680,70 @@ class TemplateMulti extends ATemplate
 			delete this._loadingBar.onEnterFrame; 
 		}
 	}
+	/**
+	 * Executed when the Fullscreen is on
+	 */
+	private function _onStageFullscreen()
+	{
+		this._isFullscreen = true;
+		this._stageNormalParams = new Object();
+		
+		this._stageNormalParams.player_x = this._player._x;
+		this._player._x = 0;
+		
+		this._stageNormalParams.player_y = this._player._y;
+		this._player._y = Stage.height - PLAYER_HEIGHT;
+		
+		this._stageNormalParams.root_width = _root.width;
+		_root.width = Stage.width;
+		
+		this._stageNormalParams.root_height = _root.height;
+		_root.height = Stage.height;
+		
+		this._stageNormalParams.swfWidth = this._swfWidth;
+		this._swfWidth = Stage.width;
+		
+		this._stageNormalParams.swfHeight = this._swfHeight;
+		this._swfHeight = Stage.height;
+		
+		this._stageNormalParams.videoMargin = this._videoMargin;
+		this._videoMargin = 0;
+		
+		this._initFlash();
+		this._initVideo();
+		
+		this._initTitle();
+		this._initSubtitles();
+		
+		this._initPlayerBackground();
+		this._initPlayerSlider(this._marginSlider);
+		
+		resizeVideo();
+	}
+	/**
+	 * Executed when the Fullscreen is off
+	 */
+	private function _onStageNormal()
+	{
+		this._isFullscreen = false;
+		
+		this._player._x = this._stageNormalParams.player_x;
+		this._player._y = this._stageNormalParams.player_y;
+		_root.width = this._stageNormalParams.root_width;
+		_root.height = this._stageNormalParams.root_height;
+		this._swfWidth = this._stageNormalParams.swfWidth;
+		this._swfHeight = this._stageNormalParams.swfHeight;
+		this._videoMargin = this._stageNormalParams.videoMargin;
+		
+		this._initFlash();
+		this._initTitle();
+		this._initSubtitles();
+		this._initVideo();
+		this._initPlayerBackground();
+		this._initPlayerSlider(this._marginSlider);
+		
+		resizeVideo();
+	}
 	/*===================== FIN = METHODES PRIVEES = FIN =====================*/
 	/*========================================================================*/
 	
@@ -1683,22 +1852,22 @@ class TemplateMulti extends ATemplate
 	}
 	/**
 	 * Action sur le bouton Next
+	 * 
+	 * @param pForce Force to play next
 	 */
-	public function nextRelease()
+	public function nextRelease(pForce:Boolean)
 	{
-		if (this.controller.hasNext && this._autoNext) {
+		if (this.controller.hasNext && (this._autoNext || pForce === true) ) {
 			this.controller.next();
 			
 			this._currentIndex = this.controller.index;
 			if (!this.controller.isPlaying) {
 				this._initTitle();
-				this.playRelease();
-				
 			} else {
 				this.stopRelease();
-				clearInterval(this._videoDelayItv);
-				this._videoDelayItv = setInterval(this, "playRelease", this._videoDelay);
 			}
+			clearInterval(this._videoDelayItv);
+			this._videoDelayItv = setInterval(this, "playRelease", this._videoDelay);
 			this.updatePlaylist();
 		} else {
 			this.stopRelease();
@@ -1809,6 +1978,13 @@ class TemplateMulti extends ATemplate
 		this._enableButton(this._playerPrevious, this.controller.hasPrevious);
 		this._enableButton(this._playerNext, this.controller.hasNext);
 	}
+	/**
+	 * Action on the Fullscreen button
+	 */
+	public function fullscreenRelease()
+	{
+		Stage["displayState"] = (!this._isFullscreen)?"fullscreen":"normal";
+	}
 	/*==================== FIN = METHODES PUBLIQUES = FIN ====================*/
 	/*========================================================================*/
 	
@@ -1839,7 +2015,7 @@ class TemplateMulti extends ATemplate
 	}
 	public function set jsNext(n:String)
 	{
-		this.nextRelease();
+		this.nextRelease(true);
 	}
 	public function set jsPrevious(n:String)
 	{

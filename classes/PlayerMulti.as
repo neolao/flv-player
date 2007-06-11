@@ -19,7 +19,7 @@ The
  * Lecteur de plusieurs FLV
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.2.10 (17/04/2007)
+ * @version 	0.2.11 (11/06/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr 
  */
 class PlayerMulti extends PlayerDefault
@@ -84,7 +84,7 @@ class PlayerMulti extends PlayerDefault
 		}
 		
 		// Lecture automatique
-		if (_root.autoplay != undefined) {
+		if (_root.autoplay == "1") {
 			this._template.playRelease();
 		} else {
 			if (_root.autoload != undefined) {
