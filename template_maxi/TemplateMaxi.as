@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Thème fourre tout du lecteur flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.0.0 (17/04/2007)
+ * @version 	1.1.0 (13/06/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMaxi extends ATemplate
@@ -282,6 +282,9 @@ class TemplateMaxi extends ATemplate
 	 * L'instance du controleur de la vidéo
 	 */
 	public var controller:PlayerDefault;
+	/**
+	 * Alpha transparency of the player	 */
+	private var _playerAlpha:Number = 100;
 	
 	/*============================= CONSTRUCTEUR =============================*/
 	/*========================================================================*/
@@ -563,6 +566,7 @@ class TemplateMaxi extends ATemplate
 		this._setVar("_onDoubleClick", 		[_root.ondoubleclick, pConfig.ondoubleclick], "String");
 		this._setVar("_onDoubleClickTarget", [_root.ondoubleclicktarget, pConfig.ondoubleclicktarget], "String");
 		this._setVar("_showMouse", 			[_root.showmouse, pConfig.showmouse], 		"String");
+		this._setVar("_playerAlpha", 		[_root.playeralpha, pConfig.playeralpha], 	"Number");
 	}
 	/**
 	 * Initialisation du buffering
@@ -963,7 +967,7 @@ class TemplateMaxi extends ATemplate
 		}
 		
 		this._playerBackground.clear();
-		this._playerBackground.beginFill(this._playerColor);
+		this._playerBackground.beginFill(this._playerColor, this._playerAlpha);
 		this._playerBackground.lineTo(0, PLAYER_HEIGHT);
 		this._playerBackground.lineTo(this.video.video._width, PLAYER_HEIGHT);
 		this._playerBackground.lineTo(this.video.video._width, 0);
@@ -1503,20 +1507,13 @@ class TemplateMaxi extends ATemplate
 		
 		// Buffer message
 		var buffer:Number = Math.min(Math.round(this.controller.getBufferLength()/this.controller.getBufferTime() * 100), 100);
-		if( (this.controller.getDuration() == undefined && this.controller.isPlaying && buffer != 100) || (buffer != 100 && this.controller.isPlaying && this.controller.getDuration() - this.controller.getPosition() > this.controller.getBufferTime()) ){
-			// if the duration is not defined, the video is playing and the buffer is not to 100
-			// if the video is not at the end
+		if (!this.controller.streamStarted && buffer >= this._lastBuffer && this.controller.getDuration() != undefined && buffer != 100) {
 			var message:String = this._bufferMessage;
 			message = message.split("_n_").join(String(buffer)+"%");
-			
 			this._buffering.message_txt.text = message;
 			
-			if (buffer >= this._lastBuffer) {
-				this._buffering._visible = true;
-			} else {
-				this._buffering._visible = false;
-			}
-		}else{
+			this._buffering._visible = true;
+		} else {
 			this._buffering._visible = false;
 		}
 		this._lastBuffer = buffer;
@@ -1763,6 +1760,7 @@ class TemplateMaxi extends ATemplate
 	public function set jsVolume(n:String)
 	{
 		this.controller.setVolume(Number(n));
+		this._volume = Number(n);
 		this._updateVolume();
 	}
 	public function set jsUrl(n:String)

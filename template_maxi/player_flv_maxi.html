@@ -62,6 +62,9 @@
 			function startImage() {
 				document.monFlash.SetVariable("player:jsStartImage", "rorobong.jpg");
 			}
+			function volume(value) {
+				document.monFlash.SetVariable("player:jsVolume", value);
+			}
 		</script>
 	</head>
 	<body>
@@ -158,7 +161,7 @@ function startImage() {
 							<p>Texte alternatif</p>
 						</object>
 					</td>
-					<td>Utilisation d'un fichier de configuration avec priorité sur les paramètres HTML.<br/> Voir <a href="flv_config.txt">le fichier de configuration en texte</a>.</td>
+					<td>Utilisation d'un fichier de configuration avec priorité sur les paramètres HTML.<br/> Voir <a href="flv_config_maxi.txt">le fichier de configuration en texte</a>.</td>
 					<td>
 						<pre class="code">&lt;object type="application/x-shockwave-flash" data="player_flv_maxi.swf" width="320" height="240"&gt;
 	&lt;param name="movie" value="player_flv_maxi.swf" /&gt;
@@ -185,6 +188,26 @@ function startImage() {
 &lt;/object&gt;</pre>
 					</td>
 				</tr>
+				<!-- <tr>
+					<td>
+						<object type="application/x-shockwave-flash" data="player_flv_maxi.swf" width="320" height="240">
+							<param name="movie" value="player_flv_maxi.swf" />
+							<param name="allowFullScreen" value="true" />
+							<param name="FlashVars" value="phpstream=1&amp;flv=http://localhost/tests/php_stream/flv_stream.php%3Ffile%3DKyodaiNoGilga_stream.flv%26position%3D&amp;width=320&amp;height=240" />
+							<p>Texte alternatif</p>
+						</object>
+					</td>
+					<td>
+						Utilisation du PHP Streaming.
+					</td>
+					<td>
+						<pre class="code">&lt;object id="monFlash" type="application/x-shockwave-flash" data="player_flv_maxi.swf" width="320" height="240"&gt;
+	&lt;param name="movie" value="player_flv_maxi.swf" /&gt;
+	&lt;param name="FlashVars" value="flv=KyodaiNoGilga.flv&amp;amp;width=320&amp;amp;height=240" /&gt;
+	&lt;p&gt;Texte alternatif&lt;/p&gt;
+&lt;/object&gt;</pre>
+					</td>
+				</tr> -->
 			</tbody>
 		</table>
 		<p>Plus d'information sur <a href="http://resources.neolao.com/flash/components/player_flv/templates/maxi">la page officielle</a>.</p>
