@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template multi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.0.0 (11/06/2007) 
+ * @version 	1.1.0 (13/06/2007) 
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMulti extends ATemplate
@@ -330,6 +330,10 @@ class TemplateMulti extends ATemplate
 	 * Memorise stage parameters when fullscreen is off
 	 */
 	private var _stageNormalParams:Object;
+	/**
+	 * Play the video on load
+	 */
+	private var _playOnLoad:Boolean = true;
 	
 	/*============================= CONSTRUCTEUR =============================*/
 	/*========================================================================*/
@@ -629,6 +633,7 @@ class TemplateMulti extends ATemplate
 		this._setVar("_playlistTextColor", 		[_root.playlisttextcolor, pConfig.playlisttextcolor], "Color");
 		this._setVar("_volume", 				[_root.volume, pConfig.volume], 				"Number");
 		this._setVar("_showFullscreen", 	    [_root.showfullscreen, pConfig.showfullscreen], "Boolean");
+		this._setVar("_playOnLoad", 	    	[_root.playonload, pConfig.playonload], 		"Boolean");
 	}
 	/**
 	 * Initialisation du buffering
@@ -1064,8 +1069,10 @@ class TemplateMulti extends ATemplate
 		{
 			this.parent.controller.setIndex(Number(pIndex));
 			this.parent.stopRelease();
-			clearInterval(this.parent._videoDelayItv);
-			this.parent._videoDelayItv = setInterval(this.parent, "playRelease", this.parent._videoDelay);
+			if (this.parent._playOnLoad) {
+				clearInterval(this.parent._videoDelayItv);
+				this.parent._videoDelayItv = setInterval(this.parent, "playRelease", this.parent._videoDelay);
+			}
 			this.parent._playlist._visible = false;
 		};
 		
@@ -1861,7 +1868,7 @@ class TemplateMulti extends ATemplate
 			this.controller.next();
 			
 			this._currentIndex = this.controller.index;
-			if (!this.controller.isPlaying) {
+			if (!this.controller.isPlaying && this._playOnLoad) {
 				this._initTitle();
 			} else {
 				this.stopRelease();
@@ -1884,7 +1891,7 @@ class TemplateMulti extends ATemplate
 		this.controller.previous();
 		
 		this._currentIndex = this.controller.index;
-		if (!this.controller.isPlaying) {
+		if (!this.controller.isPlaying && this._playOnLoad) {
 			this._initTitle();
 			this.playRelease();
 			
