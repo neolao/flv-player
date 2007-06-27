@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template multi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.1.0 (13/06/2007) 
+ * @version 	1.2.0 (27/07/2007) 
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMulti extends ATemplate
@@ -133,6 +133,14 @@ class TemplateMulti extends ATemplate
 	 * The Fullscreen button
 	 */
 	private var _playerFullscreen:MovieClip;
+	/**
+	 * Le bouton "Close Captions" du lecteur pour afficher les sous-titres
+	 */
+	private var _playerShowSubtitles:MovieClip;
+	/**
+	 * Le bouton "Close Captions" du lecteur pour cacher les sous-titres
+	 */
+	private var _playerHideSubtitles:MovieClip;
 	/**
 	 * L'interval du lecteur pour la fermeture
 	 */
@@ -334,6 +342,11 @@ class TemplateMulti extends ATemplate
 	 * Play the video on load
 	 */
 	private var _playOnLoad:Boolean = true;
+	/**
+	 * Affichage du bouton "Close Captions"
+	 */
+	private var _showSwitchSubtitles:Boolean = false;
+	
 	
 	/*============================= CONSTRUCTEUR =============================*/
 	/*========================================================================*/
@@ -379,10 +392,15 @@ class TemplateMulti extends ATemplate
 			vMarginSlider += VOLUME_WIDTH;
 			vSeparators.push(VOLUME_WIDTH);
 		}
+		// CloseCaption button
+		if (this._showSwitchSubtitles) {
+			vMarginSlider += BUTTON_WIDTH;
+			vSeparators.push(BUTTON_WIDTH);
+		}
 		// Fullscreen button
 		if (this._showFullscreen) {
-			vMarginSlider += VOLUME_WIDTH;
-			vSeparators.push(VOLUME_WIDTH);
+			vMarginSlider += BUTTON_WIDTH;
+			vSeparators.push(BUTTON_WIDTH);
 		}
 		this._initPlayerTime();
 		if (this._showTime > 0) {
@@ -548,6 +566,11 @@ class TemplateMulti extends ATemplate
 			// touche "+"
 			this._addShortcut(107, vIncreaseVolume);
 			this._addShortcut(187, vIncreaseVolume);
+			// touche "C"
+			this._addShortcut(67, this.delegate(this, function()
+			{
+				this.showSubtitlesRelease();
+			}));
 		
 		}
 	}
@@ -634,6 +657,7 @@ class TemplateMulti extends ATemplate
 		this._setVar("_volume", 				[_root.volume, pConfig.volume], 				"Number");
 		this._setVar("_showFullscreen", 	    [_root.showfullscreen, pConfig.showfullscreen], "Boolean");
 		this._setVar("_playOnLoad", 	    	[_root.playonload, pConfig.playonload], 		"Boolean");
+		this._setVar("_showSwitchSubtitles",	[_root.showswitchsubtitles, pConfig.showswitchsubtitles], "Boolean");
 	}
 	/**
 	 * Initialisation du buffering
@@ -797,9 +821,16 @@ class TemplateMulti extends ATemplate
 	 */
 	private function _initSubtitles()
 	{
-		this._subtitles = this.video.createEmptyMovieClip("subtitles_mc", this.video.getNextHighestDepth());
+		var vDepth:Number;
+		if (this._subtitles) {
+			vDepth = this._subtitles.getDepth();
+			this._subtitles.removeMovieClip();
+		} else {
+			vDepth = this.video.getNextHighestDepth();
+		}
+		this._subtitles = this.video.createEmptyMovieClip("subtitles_mc", vDepth);
 		
-		this._subtitles.createTextField("message_txt", this._subtitles.getNextHighestDepth(), 0, 0, this._swfWidth, 0);
+		this._subtitles.createTextField("message_txt", this._subtitles.getNextHighestDepth(), 0, 0, this._swfWidth - this._videoMargin*2, 0);
 		this._subtitles.message_txt.selectable = false;
 		this._subtitles.message_txt.multiline = true;
 		this._subtitles.message_txt.wordWrap = true;
@@ -815,7 +846,7 @@ class TemplateMulti extends ATemplate
 		this._subtitles.onEnterFrame = this.delegate(this, function()
 		{
 			this._subtitles.message_txt.text = this.controller.getSubtitle();
-			this._subtitles._visible = !(this._subtitles.message_txt.text == "");
+			this._subtitles._visible = !(this._subtitles.message_txt.text == "") && !this._subtitles.hide;
 			this._subtitles.message_txt._x = 0;
 			this._subtitles._y = this._swfHeight - this._videoMargin*2 - this._subtitles.message_txt._height;
 			
@@ -895,6 +926,7 @@ class TemplateMulti extends ATemplate
 			this._initPlayerStop();
 			this._initPlayerNext();
 			this._initPlayerVolume();
+			this._initPlayerSwitchSubtitles();
 			this._initPlayerFullscreen();
 			
 			this._mouse = new Object();
@@ -1398,12 +1430,61 @@ class TemplateMulti extends ATemplate
 		delete this._playerVolume.onEnterFrame;
 	}
 	/**
+	 * Initialisation du bouton "Close Captions"
+	 */
+	private function _initPlayerSwitchSubtitles()
+	{
+		if (this._showSwitchSubtitles) {
+			this._playerShowSubtitles = this._player.createEmptyMovieClip("showSubtitles_btn", this._player.getNextHighestDepth()); 
+			this._initButton(this._playerShowSubtitles);
+			
+			this._playerShowSubtitles._x = BUTTON_WIDTH;
+			if (this._showOpen) {
+				this._playerShowSubtitles._x += BUTTON_WIDTH;
+			}
+			if (this._showPrevious) {
+				this._playerShowSubtitles._x += BUTTON_WIDTH;
+			}
+			if (this._showStop) {
+				this._playerShowSubtitles._x += BUTTON_WIDTH;
+			}
+			if (this._showNext) {
+				this._playerShowSubtitles._x += BUTTON_WIDTH;
+			}
+			if (this._showVolume) {
+				this._playerShowSubtitles._x += VOLUME_WIDTH;
+			}
+			
+			this._playerShowSubtitles.area_mc.onRelease = this.delegate(this, this.showSubtitlesRelease); 
+			
+			// icone
+			this._playerShowSubtitles.icon_mc.lineStyle(1, this._buttonColor, 100);
+			this._playerShowSubtitles.icon_mc.lineTo(0, 10);
+			this._playerShowSubtitles.icon_mc.lineTo(14, 10);
+			this._playerShowSubtitles.icon_mc.lineTo(14, 0);
+			this._playerShowSubtitles.icon_mc.lineTo(0, 0);
+			
+			this._playerShowSubtitles.icon_mc.moveTo(7, 3);
+			this._playerShowSubtitles.icon_mc.lineTo(6, 2);
+			this._playerShowSubtitles.icon_mc.curveTo(0, 5, 6, 8);
+			this._playerShowSubtitles.icon_mc.lineTo(7, 7);
+			
+			this._playerShowSubtitles.icon_mc.moveTo(12, 3);
+			this._playerShowSubtitles.icon_mc.lineTo(11, 2);
+			this._playerShowSubtitles.icon_mc.curveTo(5, 5, 11, 8);
+			this._playerShowSubtitles.icon_mc.lineTo(12, 7);
+			
+			this._playerShowSubtitles.icon_mc._y = PLAYER_HEIGHT/2 - this._playerShowSubtitles.icon_mc._height/2 + 1;
+			this._playerShowSubtitles.icon_mc._x = BUTTON_WIDTH/2 - this._playerShowSubtitles.icon_mc._width/2 + 1;
+		}
+	}
+	/**
 	 * Initialize the Fullscreen button
 	 */
 	private function _initPlayerFullscreen()
 	{
 		if (this._showFullscreen) {
-			this._playerFullscreen = this._player.createEmptyMovieClip("fullscren_btn", this._player.getNextHighestDepth()); 
+			this._playerFullscreen = this._player.createEmptyMovieClip("fullscreen_btn", this._player.getNextHighestDepth()); 
 			this._initButton(this._playerFullscreen);
 			
 			this._playerFullscreen._x = BUTTON_WIDTH;
@@ -1420,6 +1501,9 @@ class TemplateMulti extends ATemplate
 				this._playerFullscreen._x += BUTTON_WIDTH;
 			}
 			if (this._showVolume) {
+				this._playerFullscreen._x += VOLUME_WIDTH;
+			}
+			if (this._showSwitchSubtitles) {
 				this._playerFullscreen._x += BUTTON_WIDTH;
 			}
 			
@@ -1439,8 +1523,8 @@ class TemplateMulti extends ATemplate
 			this._playerFullscreen.icon_mc.moveTo(9, 4);
 			this._playerFullscreen.icon_mc.lineTo(4, 9);
 			
-			this._playerFullscreen.icon_mc._y = PLAYER_HEIGHT/2 - this._playerFullscreen.icon_mc._height/2 + 1;
-			this._playerFullscreen.icon_mc._x = BUTTON_WIDTH/2 - this._playerFullscreen.icon_mc._width/2 + 1;
+			this._playerFullscreen.icon_mc._y = PLAYER_HEIGHT/2 - this._playerFullscreen.icon_mc._height/2;
+			this._playerFullscreen.icon_mc._x = BUTTON_WIDTH/2 - this._playerFullscreen.icon_mc._width/2;
 		}
 	}
 	/**
@@ -1468,8 +1552,11 @@ class TemplateMulti extends ATemplate
 			if (this._showVolume) {
 				this._playerTime._x += VOLUME_WIDTH;
 			}
+			if (this._showSwitchSubtitles) {
+				this._playerTime._x += BUTTON_WIDTH;
+			}
 			if (this._showFullscreen) {
-				this._playerTime._x += VOLUME_WIDTH;
+				this._playerTime._x += BUTTON_WIDTH;
 			}
 			
 			// Champ de texte
@@ -1991,6 +2078,21 @@ class TemplateMulti extends ATemplate
 	public function fullscreenRelease()
 	{
 		Stage["displayState"] = (!this._isFullscreen)?"fullscreen":"normal";
+	}
+	/**
+	 * Action sur le bouton ShowSubtitles
+	 */
+	public function showSubtitlesRelease()
+	{
+		this._subtitles.hide = (this._subtitles.hide)?false:true;
+		this._subtitles._visible = this._subtitles.hide;
+	}
+	/**
+	 * Action sur le bouton HideSubtitles
+	 */
+	public function hideSubtitlesRelease()
+	{
+		
 	}
 	/*==================== FIN = METHODES PUBLIQUES = FIN ====================*/
 	/*========================================================================*/
