@@ -19,7 +19,7 @@ The
  * Lecteur FLV normal
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.8.1 (04/11/2006)
+ * @version 	0.8.2 (29/06/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */
 class PlayerDefault extends PlayerBasic
@@ -31,12 +31,6 @@ class PlayerDefault extends PlayerBasic
 	/**
 	 * Les sous-titres	 */
 	private var _subtitles:Array;
-	/**
-	 * Les millisecondes de la vidéo	 */
-	private var _millisecond:Number;
-	/**
-	 * L'interval pour la gestion des millisecondes	 */
-	private var _millisecondInterval:Number;
 	
 	/*============================= CONSTRUCTEUR =============================*/
 	/*========================================================================*/
@@ -107,50 +101,11 @@ class PlayerDefault extends PlayerBasic
 			vSrt.load(this._videoUrl.substr(0, this._videoUrl.length-3)+"srt", vSrt, "GET");
 		}
 	}
-	/**
-	 * Incrémente les millisecondes de la vidéo	 */
-	private function _incrementMillisecond()
-	{
-		this._millisecond++;
-		this._millisecond %= 1000;
-		if (this._ns.bufferLength == this._ns.bufferTime) {
-			this._millisecond = 0;
-		}
-	}
 	/*===================== FIN = METHODES PRIVEES = FIN =====================*/
 	/*========================================================================*/
 	
 	/*========================== METHODES PUBLIQUES ==========================*/
 	/*========================================================================*/
-	/**
-	 * Jouer	 */
-	public function play()
-	{
-		super.play();
-		
-		clearInterval(this._millisecondInterval);
-		this._millisecond = 0;
-		this._millisecondInterval = setInterval(this, "_incrementMillisecond", 1);
-	}
-	/**
-	 * Pause
-	 */
-	public function pause()
-	{
-		super.pause();
-		
-		clearInterval(this._millisecondInterval);
-	}
-	/**
-	 * Stopper
-	 */
-	public function stop()
-	{
-		super.stop();
-		
-		this._millisecond = 0;
-		clearInterval(this._millisecondInterval);
-	}
 	/**
 	 * Change le volume
 	 * 
@@ -182,7 +137,7 @@ class PlayerDefault extends PlayerBasic
 	public function getSubtitle():String
 	{
 		for (var i:Number=0; i<this._subtitles.length; i++) {
-			if (this._ns.time*1000+this._millisecond >= this._subtitles[i].timeStart && this._ns.time*1000+this._millisecond <= this._subtitles[i].timeEnd) {
+			if (this._ns.time*1000 >= this._subtitles[i].timeStart && this._ns.time*1000 <= this._subtitles[i].timeEnd) {
 				return this._subtitles[i].message;
 			}
 		}

@@ -261,7 +261,7 @@ class TemplateMaxi extends ATemplate
 	private var _stageNormalParams:Object;
 	/**
 	 * Affichage du bouton "Close Captions"	 */
-	private var _showSwitchSubtitles:Boolean;
+	private var _showSwitchSubtitles:Boolean = false;
 	/**
 	 * La couleur du titre de la vidéo
 	 */
