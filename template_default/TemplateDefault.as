@@ -16,10 +16,10 @@ The Original Code is flvplayer (http://code.google.com/p/flvplayer/).
 The Initial Developer of the Original Code is neolao (neolao@gmail.com).
 */
 /** 
- * Thème par défaut du lecteur flv
+ * Template default
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.1.4 (18/05/2007)
+ * @version 	1.2.0 (03/08/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateDefault extends ATemplate

@@ -16,20 +16,24 @@ The Original Code is flvplayer (http://code.google.com/p/flvplayer/).
 The Initial Developer of the Original Code is neolao (neolao@gmail.com).
 */
 /**
- * Lecteur FLV normal
+ * Normal player flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.8.2 (29/06/2007)
+ * @version 	0.9.0 (03/08/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */
 class PlayerDefault extends PlayerBasic
 {
 	// ------------------------------ VARIABLES --------------------------------
 	/**
-	 * Utilisation des sous titres	 */
+	 * Use subtitles	 */
 	private var _useSrt:Boolean = false;
 	/**
-	 * Les sous-titres	 */
+	 * Subtitles path
+	 */
+	private var _srtUrl:String;
+	/**
+	 * Subtitles data	 */
 	private var _subtitles:Array;
 	
 	/*============================= CONSTRUCTEUR =============================*/
@@ -51,7 +55,7 @@ class PlayerDefault extends PlayerBasic
 	/*=========================== METHODES PRIVEES ===========================*/
 	/*========================================================================*/
 	/**
-	 * Initialisation des variables 
+	 * Initialize variables
 	 */
 	private function _initVars()
 	{
@@ -59,6 +63,9 @@ class PlayerDefault extends PlayerBasic
 		
 		if (_root.srt) {
 			this._useSrt = true;
+		}
+		if (_root.strurl != undefined) {
+			this._srtUrl = _root.strurl
 		}
 	}
 	/**
@@ -98,7 +105,11 @@ class PlayerDefault extends PlayerBasic
 					}
 				}
 			};
-			vSrt.load(this._videoUrl.substr(0, this._videoUrl.length-3)+"srt", vSrt, "GET");
+			if(this._srtUrl != undefined) {
+				vSrt.load(this._srtUrl, vSrt, "GET");
+			} else {
+				vSrt.load(this._videoUrl.substr(0, this._videoUrl.length-3)+"srt", vSrt, "GET");
+			}
 		}
 	}
 	/*===================== FIN = METHODES PRIVEES = FIN =====================*/

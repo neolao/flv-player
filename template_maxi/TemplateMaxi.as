@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Thème fourre tout du lecteur flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.1.0 (13/06/2007)
+ * @version 	1.2.0 (03/08/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMaxi extends ATemplate
