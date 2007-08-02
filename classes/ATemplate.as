@@ -13,7 +13,7 @@ under the License.
 
 The Original Code is flvplayer (http://code.google.com/p/flvplayer/).
 
-The
+The Initial Developer of the Original Code is neolao (neolao@gmail.com).
 */
 /**
  * Classe abstraite pour un thème
@@ -171,9 +171,9 @@ class ATemplate
 	public function delegate(pTarget:Object, pFunc:Function):Function
 	{
 		var f:Function = function(){
-			var target = arguments.callee.target;
-			var func = arguments.callee.func;
-			var args = arguments.callee.args.concat(arguments);
+			var target:Object = arguments.callee.target;
+			var func:Function = arguments.callee.func;
+			var args:Array = arguments.callee.args.concat(arguments);
 
 			return func.apply(target, args);
 		};

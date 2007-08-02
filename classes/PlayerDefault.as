@@ -13,7 +13,7 @@ under the License.
 
 The Original Code is flvplayer (http://code.google.com/p/flvplayer/).
 
-The
+The Initial Developer of the Original Code is neolao (neolao@gmail.com).
 */
 /**
  * Lecteur FLV normal
