@@ -247,10 +247,6 @@ class PlayerMulti extends PlayerDefault
 		}
 		
 		this.isPlaying = true;
-		
-		clearInterval(this._millisecondInterval);
-		this._millisecond = 0;
-		this._millisecondInterval = setInterval(this, "_incrementMillisecond", 1);
 	}
 	/**
 	 * mp3 suivant
@@ -318,7 +314,7 @@ class PlayerMulti extends PlayerDefault
 	public function getSubtitle():String
 	{
 		for (var i:Number=0; i<this._subtitles[this.index].length; i++) {
-			if (this._ns.time*1000+this._millisecond >= this._subtitles[this.index][i].timeStart && this._ns.time*1000+this._millisecond <= this._subtitles[this.index][i].timeEnd) {
+			if (this._ns.time*1000 >= this._subtitles[this.index][i].timeStart && this._ns.time*1000 <= this._subtitles[this.index][i].timeEnd) {
 				return this._subtitles[this.index][i].message;
 			}
 		}
