@@ -598,8 +598,8 @@ class TemplateMaxi extends ATemplate
 				var depth:Number = Number(i.substring(3));
 				var params:Array = _root[i].split("|");
 				var url:String = params[0];
-				var vertical:String = (params[1] === undefined)?"":params[1];
-				var horizontal:String = (params[2] === undefined)?"":params[2];
+				var horizontal:String = (params[1] === undefined)?"":params[1];
+				var vertical:String = (params[2] === undefined)?"":params[2];
 				this._topContainers.push({depth:depth, url:url, verticalAlign:vertical, horizontalAlign:horizontal});
 			}
 		}
