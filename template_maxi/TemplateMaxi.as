@@ -16,10 +16,10 @@ The Original Code is flvplayer (http://code.google.com/p/flvplayer/).
 The Initial Developer of the Original Code is neolao (neolao@gmail.com).
 */
 /** 
- * Thème fourre tout du lecteur flv
+ * Template Maxi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.2.0 (03/08/2007)
+ * @version 	1.3.0 (14/08/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMaxi extends ATemplate
@@ -338,6 +338,19 @@ class TemplateMaxi extends ATemplate
 			}
 		});
 		Stage.addListener(fullscreenListener);
+		
+		// Initialize logo logo
+		_root.createEmptyMovieClip("top", _root.getNextHighestDepth());
+		this.loadMovieOnTop = _root.logo;
+		
+		// Auto resize
+		/* for netvibes
+		var stageListener:Object = new Object();
+		stageListener.onResize = this.delegate(this, function () {
+		     this._onStageFullscreen();
+		});
+		Stage.addListener(stageListener);
+		*/
 	}
 	/**
 	 * Lancé par mtasc
@@ -1736,6 +1749,57 @@ class TemplateMaxi extends ATemplate
 			this._loadingBar._visible = true;
 		}
 	}
+	/**
+	 * Load jpg or swf on top of the video
+	 * 
+	 * @param pUrl The url
+	 */
+	public function loadUrl(pDepth:Number, pUrl:String, pVerticalAlign:String, pHorizontalAlign:String)
+	{
+		var top:MovieClip = _root.top;
+		
+		var movieContainer:MovieClip = top.createEmptyMovieClip("movie_"+pDepth, pDepth);
+		var movie:MovieClip = movieContainer.createEmptyMovieClip("mc", 1);
+		
+		movieContainer.stageListener = new Object();
+		movieContainer.stageListener.verticalAlign = pVerticalAlign;
+		movieContainer.stageListener.horizontalAlign = pHorizontalAlign;
+		movieContainer.stageListener.mc = movieContainer;
+		movieContainer.stageListener.onResize = function()
+		{
+			if (this.horizontalAlign == "") {
+				// center
+				this.mc._x = (Stage.width - this.mc._width) / 2;
+			} else if (this.horizontalAlign.charAt(0) == "-") {
+				// right align
+				this.mc._x = Stage.width - this.mc._width + Number(this.horizontalAlign);
+			} else {
+				// left align
+				this.mc._x = Number(this.horizontalAlign);
+			}
+			
+			if (this.verticalAlign == "") {
+				// center
+				this.mc._y = (Stage.height - this.mc._height) / 2;
+			} else if (this.verticalAlign.charAt(0) == "-") {
+				// bottom align
+				this.mc._y = Stage.height - this.mc._height + Number(this.verticalAlign);
+			} else {
+				// top align
+				this.mc._y = Number(this.verticalAlign);
+			}
+		};
+		Stage.addListener(movieContainer.stageListener);
+		
+		movieContainer.onEnterFrame = this.delegate(movieContainer, function()
+		{
+			if (this._width > 0) {
+				this.stageListener.onResize();
+				delete this.onEnterFrame;
+			}
+		});
+		movie.loadMovie(pUrl);
+	}
 	/*==================== FIN = METHODES PUBLIQUES = FIN ====================*/
 	/*========================================================================*/
 	
@@ -1775,6 +1839,22 @@ class TemplateMaxi extends ATemplate
 	public function set jsSetPosition(n:String)
 	{
 		this.controller.setPosition(Number(n));
+	}
+	/**
+	 * Load jpg or swf on top of the video
+	 * 
+	 * @param pUrl The url
+	 */
+	public function set loadMovieOnTop(pUrl:String)
+	{
+		var param:Array = pUrl.split("|");
+		var vertical:String = (param[2] === undefined)?"":param[2];
+		var horizontal:String = (param[3] === undefined)?"":param[3];
+		
+		this.loadUrl(Number(param[1]), 
+					param[0], 
+					vertical, 
+					horizontal);
 	}
 	/*=================== FIN = CONTROLES JAVASCRIPT = FIN ===================*/
 	/*========================================================================*/
