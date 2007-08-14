@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template Maxi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.3.0 (14/08/2007)
+ * @version 	1.3.0 (15/08/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMaxi extends ATemplate
@@ -285,6 +285,9 @@ class TemplateMaxi extends ATemplate
 	/**
 	 * Alpha transparency of the player	 */
 	private var _playerAlpha:Number = 100;
+	/**
+	 * Top containers	 */
+	private var _topContainers:Array;
 	
 	/*============================= CONSTRUCTEUR =============================*/
 	/*========================================================================*/
@@ -293,7 +296,10 @@ class TemplateMaxi extends ATemplate
 	 */
 	public function TemplateMaxi()
 	{
+		this._topContainers = new Array();
+		
 		super();
+		
 		
 		this._initBackground();
 		this._initFont();
@@ -339,18 +345,22 @@ class TemplateMaxi extends ATemplate
 		});
 		Stage.addListener(fullscreenListener);
 		
-		// Initialize logo logo
+		// Initialize the top container
 		_root.createEmptyMovieClip("top", _root.getNextHighestDepth());
-		this.loadMovieOnTop = _root.logo;
+		
+		// Load top containers
+		for (var i:Number = 0; i < this._topContainers.length; i++) {
+			this.loadUrl(this._topContainers[i].depth, this._topContainers[i].url, this._topContainers[i].verticalAlign, this._topContainers[i].horizontalAlign);
+		}
 		
 		// Auto resize
-		/* for netvibes
 		var stageListener:Object = new Object();
 		stageListener.onResize = this.delegate(this, function () {
-		     this._onStageFullscreen();
+			if (!this._isFullscreen) {
+				this._onStageNormal();
+			}
 		});
 		Stage.addListener(stageListener);
-		*/
 	}
 	/**
 	 * Lancé par mtasc
@@ -580,6 +590,19 @@ class TemplateMaxi extends ATemplate
 		this._setVar("_onDoubleClickTarget", [_root.ondoubleclicktarget, pConfig.ondoubleclicktarget], "String");
 		this._setVar("_showMouse", 			[_root.showmouse, pConfig.showmouse], 		"String");
 		this._setVar("_playerAlpha", 		[_root.playeralpha, pConfig.playeralpha], 	"Number");
+		
+		// Initialize top containers
+		for (var i:String in _root) {
+			if (i.indexOf("top") === 0) {
+				// The parameter starts with "top"
+				var depth:Number = Number(i.substring(3));
+				var params:Array = _root[i].split("|");
+				var url:String = params[0];
+				var vertical:String = (params[1] === undefined)?"":params[1];
+				var horizontal:String = (params[2] === undefined)?"":params[2];
+				this._topContainers.push({depth:depth, url:url, verticalAlign:vertical, horizontalAlign:horizontal});
+			}
+		}
 	}
 	/**
 	 * Initialisation du buffering
@@ -609,6 +632,8 @@ class TemplateMaxi extends ATemplate
 		}else{
 			var vWidth:Number = this._swfWidth;
 			var vHeight:Number = this._swfHeight;
+			
+			this._background.clear();
 			
 			// La couleur de fond fond fond si elle est définie
 			if(this._backgroundColor != undefined){ 
@@ -1603,15 +1628,23 @@ class TemplateMaxi extends ATemplate
 	{
 		this._isFullscreen = false;
 		
-		this._player._x = this._stageNormalParams.player_x;
-		this._player._y = this._stageNormalParams.player_y;
-		_root.width = this._stageNormalParams.root_width;
-		_root.height = this._stageNormalParams.root_height;
-		this._swfWidth = this._stageNormalParams.swfWidth;
-		this._swfHeight = this._stageNormalParams.swfHeight;
-		this._videoMargin = this._stageNormalParams.videoMargin;
+		//this._player._x = this._stageNormalParams.player_x;
+		//this._player._y = this._stageNormalParams.player_y;
+		//this._videoMargin = this._stageNormalParams.videoMargin;
+		//_root.width = this._stageNormalParams.root_width;
+		//_root.height = this._stageNormalParams.root_height;
+		//this._swfWidth = this._stageNormalParams.swfWidth;
+		//this._swfHeight = this._stageNormalParams.swfHeight;
+		this._videoMargin = (_root.margin === undefined)?5:parseInt(_root.margin, 10);
+		this._player._x = this._videoMargin;
+		this._player._y = Stage.height - PLAYER_HEIGHT - this._videoMargin;
+		_root.width = Stage.width;
+		_root.height = Stage.height;
+		this._swfWidth = Stage.width;
+		this._swfHeight = Stage.height;
 		
 		this._initFlash();
+		this._initBackground();
 		this._initTitle();
 		this._initSubtitles();
 		this._initVideo();
@@ -1752,7 +1785,10 @@ class TemplateMaxi extends ATemplate
 	/**
 	 * Load jpg or swf on top of the video
 	 * 
+	 * @param pDepth The depth
 	 * @param pUrl The url
+	 * @param pVerticalAlign Vertical align
+	 * @param pHorizontalAlign Horizontal align
 	 */
 	public function loadUrl(pDepth:Number, pUrl:String, pVerticalAlign:String, pHorizontalAlign:String)
 	{
@@ -1843,16 +1879,16 @@ class TemplateMaxi extends ATemplate
 	/**
 	 * Load jpg or swf on top of the video
 	 * 
-	 * @param pUrl The url
+	 * @param pParams The url
 	 */
-	public function set loadMovieOnTop(pUrl:String)
+	public function set jsLoadMovieOnTop(pParams:String)
 	{
-		var param:Array = pUrl.split("|");
-		var vertical:String = (param[2] === undefined)?"":param[2];
-		var horizontal:String = (param[3] === undefined)?"":param[3];
+		var params:Array = pParams.split("|");
+		var vertical:String = (params[2] === undefined)?"":params[2];
+		var horizontal:String = (params[3] === undefined)?"":params[3];
 		
-		this.loadUrl(Number(param[1]), 
-					param[0], 
+		this.loadUrl(Number(params[1]), 
+					params[0], 
 					vertical, 
 					horizontal);
 	}
