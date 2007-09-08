@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template Maxi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.3.0 (15/08/2007)
+ * @version 	1.3.1 (08/09/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMaxi extends ATemplate

@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Normal player flv
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.9.0 (03/08/2007)
+ * @version 	0.9.1 (08/09/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */
 class PlayerDefault extends PlayerBasic
@@ -61,11 +61,11 @@ class PlayerDefault extends PlayerBasic
 	{
 		super._initVars();
 		
-		if (_root.srt) {
+		if (_root.srt == "1") {
 			this._useSrt = true;
 		}
-		if (_root.strurl != undefined) {
-			this._srtUrl = _root.strurl
+		if (_root.srturl != undefined) {
+			this._srtUrl = _root.srturl
 		}
 	}
 	/**
