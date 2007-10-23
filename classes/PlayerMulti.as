@@ -16,17 +16,17 @@ The Original Code is flvplayer (http://code.google.com/p/flvplayer/).
 The Initial Developer of the Original Code is neolao (neolao@gmail.com).
 */
 /**
- * Lecteur de plusieurs FLV
+ * Player for several FLV
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.2.11 (11/06/2007)
+ * @version 	0.2.12 (23/10/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr 
  */
 class PlayerMulti extends PlayerDefault
 {
 	// ------------------------------ CONSTANTES -------------------------------
 	/**
-	 * Le séparateur les urls
+	 * Url separator
 	 */
 	static var URL_SEPARATOR:String = "|";
 	
@@ -143,6 +143,9 @@ class PlayerMulti extends PlayerDefault
 		
 		// La zone video du thème affiche le NetStream
 		this._template.video.video.attachVideo(this._ns);
+		
+		// Smooth effect
+		this._template.video.video.smoothing = true;
 		
 		// Gestion du son
 		this._sound = new Sound();

@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template multi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.2.0 (27/07/2007) 
+ * @version 	1.2.1 (23/10/2007) 
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMulti extends ATemplate
@@ -732,11 +732,10 @@ class TemplateMulti extends ATemplate
 		this.video.lineTo(this._swfWidth - this._videoMargin*2, 0);
 		this.video.endFill();
 
-		// Dimension du conteneur vidéo
-		this.video._xscale = 100;
-		this.video._yscale = 100;
-		this.video._x = this._videoMargin;
-		this.video._y = this._videoMargin;
+		this.video.video._width = this._swfWidth - this._videoMargin*2;
+		this.video.video._height = this._swfHeight - this._videoMargin*2;
+		this.video.video._x = 0;
+		this.video.video._y = 0;
 		
 		// Action on click (transparent background)
 		var vButton:MovieClip;
@@ -775,6 +774,12 @@ class TemplateMulti extends ATemplate
 					getURL(this._onClick, this._onClickTarget);
 				});
 		}
+		
+		// Dimension du conteneur vidéo
+		this.video._xscale = 100;
+		this.video._yscale = 100;
+		this.video._x = this._videoMargin;
+		this.video._y = this._videoMargin;
 		
 		this._initBuffering();
 	}
@@ -958,8 +963,8 @@ class TemplateMulti extends ATemplate
 		this._playerBackground.clear();
 		this._playerBackground.beginFill(this._playerColor);
 		this._playerBackground.lineTo(0, PLAYER_HEIGHT);
-		this._playerBackground.lineTo(this.video._width, PLAYER_HEIGHT);
-		this._playerBackground.lineTo(this.video._width, 0);
+		this._playerBackground.lineTo(this.video.video._width, PLAYER_HEIGHT);
+		this._playerBackground.lineTo(this.video.video._width, 0);
 		this._playerBackground.endFill();
 	}
 	/**
@@ -1919,7 +1924,7 @@ class TemplateMulti extends ATemplate
 		
 		super.stopRelease();
 		
-		this.video.freeze_mc._visible = true;
+		this.video.freeze_mc._visible = (this.video.title_txt.text);
 		this.video.title_txt._visible = true;
 		this.video.image_mc._visible = true;
 		
