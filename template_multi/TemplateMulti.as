@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template multi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.2.1 (23/10/2007) 
+ * @version 	1.2.2 (05/11/2007) 
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMulti extends ATemplate
@@ -1924,7 +1924,7 @@ class TemplateMulti extends ATemplate
 		
 		super.stopRelease();
 		
-		this.video.freeze_mc._visible = (this.video.title_txt.text);
+		this.video.freeze_mc._visible = (this.video.title_txt.text != "");
 		this.video.title_txt._visible = true;
 		this.video.image_mc._visible = true;
 		
