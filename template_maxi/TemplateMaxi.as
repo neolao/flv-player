@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template Maxi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.3.1 (08/09/2007)
+ * @version 	1.4.0 (09/11/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMaxi extends ATemplate
@@ -836,6 +836,15 @@ class TemplateMaxi extends ATemplate
 		this._subtitles.message_txt.text = "";
 		this._subtitles.message_txt.autoSize = "center";
 		this._subtitles.message_txt.setNewTextFormat(this._subtitleFormat);
+		
+		var glow = new flash.filters.GlowFilter();
+		glow.color = 0x000000;
+		glow.blurX = 4;
+		glow.blurY = 4;
+		glow.alpha = 100;
+		var currentFilters:Array = this._subtitles.filters;
+		currentFilters.push(glow);
+		this._subtitles.filters = currentFilters;
 		
 		this._subtitles.onEnterFrame = this.delegate(this, function()
 		{
