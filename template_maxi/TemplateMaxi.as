@@ -987,8 +987,12 @@ class TemplateMaxi extends ATemplate
 				}
 				
 				this._player._visible = true;
-				clearInterval(this._playerItv);
-				this._playerItv = setInterval(this, "_playerInterval", this._playerTimeout);
+				
+				// If the player is not stopped
+				if (!this._stopped) {
+					clearInterval(this._playerItv);
+					this._playerItv = setInterval(this, "_playerInterval", this._playerTimeout);
+				}
 			};
 			
 			// Mouse listener
