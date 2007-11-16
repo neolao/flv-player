@@ -442,25 +442,35 @@ class TemplateMaxi extends ATemplate
 		});
 		var vIncreaseVolume:Function = this.delegate(this, function()
 		{
-			var vVolume:Number = this._volume;
-			vVolume += 10;
-			if (vVolume > this._volumeMax) {
-				vVolume = this._volumeMax;
+			var currentSelection:String = Selection.getFocus();
+			
+			// If the focus is not set, or set on the volume button
+			if (!currentSelection || currentSelection.indexOf("volume_btn") > 0) {
+				var vVolume:Number = this._volume;
+				vVolume += 10;
+				if (vVolume > this._volumeMax) {
+					vVolume = this._volumeMax;
+				}
+				this._volume = vVolume;
+				this.controller.setVolume(vVolume);
+				this._updateVolume();
 			}
-			this._volume = vVolume;
-			this.controller.setVolume(vVolume);
-			this._updateVolume();
 		});
 		var vDecreaseVolume:Function = this.delegate(this, function()
 		{
-			var vVolume:Number = this._volume;
-			vVolume -= 10;
-			if (vVolume < 0) {
-				vVolume = 0;
+			var currentSelection:String = Selection.getFocus();
+			
+			// If the focus is not set, or set on the volume button
+			if (!currentSelection || currentSelection.indexOf("volume_btn") > 0) {
+				var vVolume:Number = this._volume;
+				vVolume -= 10;
+				if (vVolume < 0) {
+					vVolume = 0;
+				}
+				this._volume = vVolume;
+				this.controller.setVolume(vVolume);
+				this._updateVolume();
 			}
-			this._volume = vVolume;
-			this.controller.setVolume(vVolume);
-			this._updateVolume();
 		});
 		
 		if (this._shortcut) {
@@ -474,15 +484,49 @@ class TemplateMaxi extends ATemplate
 			{
 				this.stopRelease();
 			}));
-			// touche flèche gauche
+			// Key left
 			this._addShortcut(37, this.delegate(this, function()
 			{
-				this.controller.setPosition(this.controller.getPosition() - 5);
+				var currentSelection:String = Selection.getFocus();
+				
+				// If there is no focus on a button, then go to the previous 5 seconds
+				if (!currentSelection) {
+					this.controller.setPosition(this.controller.getPosition() - 5);
+				}
+				
+				// If the focus is on the volume button
+				if (currentSelection.indexOf("volume_btn") > 0) {
+					var vVolume:Number = this._volume;
+					vVolume -= 10;
+					if (vVolume < 0) {
+						vVolume = 0;
+					}
+					this._volume = vVolume;
+					this.controller.setVolume(vVolume);
+					this._updateVolume();
+				}
 			}));
-			// touche flèche droite
+			// Key right
 			this._addShortcut(39, this.delegate(this, function()
 			{
-				this.controller.setPosition(this.controller.getPosition() + 5);
+				var currentSelection:String = Selection.getFocus();
+				
+				// If there is no focus on a button, then go to the next 5 seconds
+				if (!currentSelection) {
+					this.controller.setPosition(this.controller.getPosition() + 5);
+				}
+				
+				// If the focus is on the volume button
+				if (currentSelection.indexOf("volume_btn") > 0) {
+					var vVolume:Number = this._volume;
+					vVolume += 10;
+					if (vVolume > this._volumeMax) {
+						vVolume = this._volumeMax;
+					}
+					this._volume = vVolume;
+					this.controller.setVolume(vVolume);
+					this._updateVolume();
+				}
 			}));
 			// touche flèche bas
 			this._addShortcut(40, vDecreaseVolume);
