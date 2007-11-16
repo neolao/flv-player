@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template Maxi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.4.0 (09/11/2007)
+ * @version 	1.5.0 (17/11/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMaxi extends ATemplate
@@ -979,8 +979,9 @@ class TemplateMaxi extends ATemplate
 			this._initPlayerSwitchSubtitles();
 			this._initPlayerFullscreen();
 			
-			this._mouse = new Object();
-			this._mouse.onMouseMove = this.delegate(this, function(){
+			// Show function
+			var internalShow:Function = function()
+			{
 				if (this._showMouse != "never") {
 					Mouse.show();
 				}
@@ -988,7 +989,16 @@ class TemplateMaxi extends ATemplate
 				this._player._visible = true;
 				clearInterval(this._playerItv);
 				this._playerItv = setInterval(this, "_playerInterval", this._playerTimeout);
-			});
+			};
+			
+			// Mouse listener
+			this._mouse = new Object();
+			this._mouse.onMouseMove = this.delegate(this, internalShow);
+			
+			// Key listener
+			var o:Object = new Object();
+			o.onKeyDown = this.delegate(this, internalShow);
+			Key.addListener(o);
 		} else {
 			this._player._visible = false;
 		}
@@ -1067,7 +1077,7 @@ class TemplateMaxi extends ATemplate
 		
 		vArea.parent = this;
 		vArea.color = new Color(vIcon);
-		vArea.tabEnabled = false;
+		//vArea.tabEnabled = false;
 		vArea.onRollOver = function()
 		{ 
 			this.color.setRGB(this.parent._buttonOverColor); 
