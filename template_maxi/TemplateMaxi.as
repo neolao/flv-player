@@ -485,16 +485,16 @@ class TemplateMaxi extends ATemplate
 				this.stopRelease();
 			}));
 			// Key left
-			this._addShortcut(37, this.delegate(this, function()
+			this._addShortcut(Key.LEFT, this.delegate(this, function()
 			{
 				var currentSelection:String = Selection.getFocus();
 				
 				// If there is no focus on a button, then go to the previous 5 seconds
-				if (!currentSelection) {
+				if (!currentSelection || currentSelection.indexOf("slider_mc.bar_mc") > 0) {
 					this.controller.setPosition(this.controller.getPosition() - 5);
 				}
 				
-				// If the focus is on the volume button
+				// If the focus is on the volume button, decrease the volume
 				if (currentSelection.indexOf("volume_btn") > 0) {
 					var vVolume:Number = this._volume;
 					vVolume -= 10;
@@ -507,16 +507,16 @@ class TemplateMaxi extends ATemplate
 				}
 			}));
 			// Key right
-			this._addShortcut(39, this.delegate(this, function()
+			this._addShortcut(Key.RIGHT, this.delegate(this, function()
 			{
 				var currentSelection:String = Selection.getFocus();
 				
 				// If there is no focus on a button, then go to the next 5 seconds
-				if (!currentSelection) {
+				if (!currentSelection || currentSelection.indexOf("slider_mc.bar_mc") > 0) {
 					this.controller.setPosition(this.controller.getPosition() + 5);
 				}
 				
-				// If the focus is on the volume button
+				// If the focus is on the volume button, increase the volume
 				if (currentSelection.indexOf("volume_btn") > 0) {
 					var vVolume:Number = this._volume;
 					vVolume += 10;
@@ -528,31 +528,37 @@ class TemplateMaxi extends ATemplate
 					this._updateVolume();
 				}
 			}));
-			// touche flèche bas
-			this._addShortcut(40, vDecreaseVolume);
-			// touche "-"
+			// Key down
+			this._addShortcut(Key.DOWN, vDecreaseVolume);
+			// Key "-"
 			this._addShortcut(109, vDecreaseVolume);
 			this._addShortcut(189, vDecreaseVolume);
-			// touche flèche haut
-			this._addShortcut(38, vIncreaseVolume);
-			// touche "+"
+			// Key up
+			this._addShortcut(Key.UP, vIncreaseVolume);
+			// Key "+"
 			this._addShortcut(107, vIncreaseVolume);
 			this._addShortcut(187, vIncreaseVolume);
-			// touche "C"
+			// Key "C"
 			this._addShortcut(67, this.delegate(this, function()
 			{
 				this.showSubtitlesRelease();
 			}));
+			// Key "F"
+			this._addShortcut(70, this.delegate(this, function()
+			{
+				this.fullscreenRelease();
+			}));
 		}
-		/*
-		// Pour connaitre le code de la touche
+		
+		/*// Debug : to know what is the key code
 		var o:Object = new Object();
 		o.onKeyUp = this.delegate(this, function() 
 		{
 			this.video.title_txt.text = Key.getCode();
 		});
 		Key.addListener(o);
-		*/
+		//*/
+		
 	}
 	/**
 	 * Modification d'une variable suivant des priorités
@@ -892,12 +898,19 @@ class TemplateMaxi extends ATemplate
 		
 		this._subtitles.onEnterFrame = this.delegate(this, function()
 		{
+			// If it is on the fullscreen mode, increase the size
+			if (this._isFullscreen) {
+				this._subtitleFormat.size = this._subtitleSize;
+			} else {
+				this._subtitleFormat.size = 40;
+			}
+			
 			this._subtitles.message_txt.text = this.controller.getSubtitle();
 			this._subtitles._visible = !(this._subtitles.message_txt.text == "") && !this._subtitles.hide;
 			this._subtitles.message_txt._x = 0;
 			this._subtitles._y = this._swfHeight - this._videoMargin*2 - this._subtitles.message_txt._height;
 			
-			// Si le lecteur est affiché, on remonte encore
+			// If the controls bar is visible, move up the subtitles
 			if (this._player._visible) {
 				this._subtitles._y -= this.PLAYER_HEIGHT;
 			}
@@ -991,6 +1004,8 @@ class TemplateMaxi extends ATemplate
 					} else {
 						this.video.image_mc._y = Math.floor((this._swfHeight - this._videoMargin*2 - this.video.image_mc._height) / 2);
 					}
+					
+					this.video.image_mc._visible = this._stopped;
 					
 					delete this.video.onEnterFrame;
 				};
@@ -1144,6 +1159,7 @@ class TemplateMaxi extends ATemplate
 	private function _enableButton(pButton:MovieClip, pStatus:Boolean, pMask:Boolean)
 	{ 
 		pButton.area_mc.enabled = pStatus; 
+		pButton.area_mc.tabEnabled = pStatus; 
 		pButton._visible = !pMask; 
 		if (!pStatus) pButton.icon_mc._alpha = 30; 
 		else pButton.icon_mc._alpha = 100; 
@@ -1439,7 +1455,7 @@ class TemplateMaxi extends ATemplate
 
 			});
 		
-			// le bouton
+			// the button
 			var vArea:MovieClip = this._playerTime.createEmptyMovieClip("area_mc", this._playerTime.getNextHighestDepth());
 			vArea.beginFill(0, 0);
 			vArea.moveTo(2, 2);
@@ -1447,7 +1463,7 @@ class TemplateMaxi extends ATemplate
 			vArea.lineTo(this._playerTime.time_txt._width + 10 - 4, PLAYER_HEIGHT - 4);
 			vArea.lineTo(this._playerTime.time_txt._width + 10 - 4, 2);
 			vArea.endFill();
-			vArea.tabEnabled = false;
+			//vArea.tabEnabled = false;
 			
 			vArea.onRelease = this.delegate(this, function()
 			{
@@ -1482,7 +1498,7 @@ class TemplateMaxi extends ATemplate
 		this._playerSlider._x = vMargin;
 		this._playerSlider.width = this._swfWidth - vMargin - 10 - this._videoMargin*2;
 		
-		// grand bouton
+		// big bouton
 		var vBarButton:MovieClip = this._playerSlider.createEmptyMovieClip("barButton_mc", this._playerSlider.getNextHighestDepth()); 
 		vBarButton.beginFill(0xff0000, 0);
 		vBarButton.moveTo(-10, 0);
@@ -1507,7 +1523,7 @@ class TemplateMaxi extends ATemplate
 			this.controller.setPosition(vPositionTime);
 		});
 		
-		// barre
+		// bar
 		var vBarBg:MovieClip = this._playerSlider.createEmptyMovieClip("barBg_mc", this._playerSlider.getNextHighestDepth()); 
 		vBarBg.beginFill(0xcccccc, 25);
 		vBarBg.lineTo(this._playerSlider.width, 0);
@@ -1522,7 +1538,7 @@ class TemplateMaxi extends ATemplate
 		vBarBg.endFill();
 		vBarBg._y = PLAYER_HEIGHT / 2;
 		
-		// barre de chargement
+		// loading bar
 		this._loadingBar = this._playerSlider.createEmptyMovieClip("loading_mc", this._playerSlider.getNextHighestDepth());
 		this._loadingBar.beginFill(_loadingColor, 75);
 		this._loadingBar.lineTo(_playerSlider.width, 0);
@@ -1533,14 +1549,14 @@ class TemplateMaxi extends ATemplate
 		this._loadingBar._xscale = 0;
 		this._loadingBar._visible = false;
 		
-		// barre slider 
+		// slider
 		var vSlider:MovieClip = this._playerSlider.createEmptyMovieClip("bar_mc", this._playerSlider.getNextHighestDepth()); 
 		vSlider.parent = this;
 		vSlider.margin = vMargin;
 		vSlider.width = SLIDER_WIDTH;
 		vSlider.barWidth = this._playerSlider.width;
 		vSlider.color = new Color(vSlider);
-		vSlider.tabEnabled = false;
+		//vSlider.tabEnabled = false;
 		vSlider.onRollOver = function(){
 			this.color.setRGB(this.parent._sliderOverColor);
 		}; 
@@ -1585,7 +1601,7 @@ class TemplateMaxi extends ATemplate
 		var time:Number;
 		var position:Number; 
 		
-		// Le maximum
+		// The maximum
 		if (this._loadingBar._visible) {
 			max = this._loadingBar._width - SLIDER_WIDTH;
 		} else {
@@ -1597,10 +1613,10 @@ class TemplateMaxi extends ATemplate
 			max = this._playerSlider.width;
 		}
 		
-		// Le temps
+		// The time
 		time = this.controller.getPosition();
 		
-		// La position
+		// The position
 		position = Math.round(time/this.controller.getDuration() * max)
 		if (isNaN(position)) {
 			position = 0;
@@ -1726,10 +1742,10 @@ class TemplateMaxi extends ATemplate
 	/*========================== METHODES PUBLIQUES ==========================*/
 	/*========================================================================*/
 	/**
-	 * Redimensionne la video
+	 * Resize the video
 	 * 
-	 * @param pWidth (optional) La largeur de la vidéo
-	 * @param pHeight (optional) La hauteur de la vidéo
+	 * @param pWidth (optional) The video width
+	 * @param pHeight (optional) The video height
 	 */
 	public function resizeVideo(pWidth:Number, pHeight:Number)
 	{

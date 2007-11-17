@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Basic FLV player
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.9.1 (18/05/2007)
+ * @version 	1.0.0 (17/11/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */
 class PlayerBasic
@@ -132,7 +132,11 @@ class PlayerBasic
 	private function _initVideo()
 	{
 		this._nc = new NetConnection();
-		this._nc.connect(null);
+		if (_root.netconnection != undefined) {
+			this._nc.connect(_root.netconnection);
+		} else {
+			this._nc.connect(null);
+		}
 		
 		this._ns = new NetStream(this._nc);
 		this._ns.setBufferTime(this._bufferTime);
@@ -151,6 +155,14 @@ class PlayerBasic
 				case "NetStream.Buffer.Full":
 					this.parent._template.resizeVideo();
 					break;
+				case 'NetConnection.Connect.Success' :
+                    var myStream:Object = {};
+                    myStream.parent = this;
+                    myStream.onResult = function(streamLength) {
+                        this.parent.parent._videoDuration = (info.duration < 0)?0:info.duration;
+                    };
+                    this.call("getLength", myStream, "theVideo");
+                    break;
 			}
 		};
 		this._ns.onMetaData = function(info:Object){

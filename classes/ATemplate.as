@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Classe abstraite pour un thème
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	0.7.4 (11/06/2007)
+ * @version 	0.8.0 (17/11/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */
 class ATemplate
@@ -53,6 +53,9 @@ class ATemplate
 	 * L'instance du controleur de la vidéo
 	 */
 	public var controller:PlayerBasic;
+	/**
+	 * 	 */
+	private var _lastFocus:String;
 	
 	
 	/*============================= CONSTRUCTEUR =============================*/
@@ -114,9 +117,30 @@ class ATemplate
 		this._shortcuts = new Array();
 		
 		var o:Object = new Object();
+		o.onKeyDown = this.delegate(this, function() 
+		{
+		    var currentSelection:String = Selection.getFocus();
+		    switch (Key.getCode()) {
+		     	case Key.LEFT:
+		     	case Key.RIGHT:
+		     		if (currentSelection) {
+		     			this._lastFocus = currentSelection;
+		 			 	Selection.setFocus(null);
+		     			return;
+		     		}
+		    }
+ 			this._lastFocus = null;
+		});
 		o.onKeyUp = this.delegate(this, function() 
 		{
-		     if (this._shortcuts[Key.getCode()]) {
+ 			 if (this._lastFocus) {
+ 			 	Selection.setFocus(this._lastFocus);
+ 			 }
+		     
+		     if (Key.getCode() == Key.ESCAPE) {
+		     	// Remove the focus on buttons when the user press the Esc key
+		     	Selection.setFocus(null);
+		     } else if (this._shortcuts[Key.getCode()]) {
 		     	this._shortcuts[Key.getCode()]();
 		     }
 		});
