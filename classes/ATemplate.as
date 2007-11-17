@@ -123,6 +123,8 @@ class ATemplate
 		    switch (Key.getCode()) {
 		     	case Key.LEFT:
 		     	case Key.RIGHT:
+		     	case Key.UP:
+		     	case Key.DOWN:
 		     		if (currentSelection) {
 		     			this._lastFocus = currentSelection;
 		 			 	Selection.setFocus(null);
