@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template Maxi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.5.0 (17/11/2007)
+ * @version 	1.5.1 (30/12/2007)
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMaxi extends ATemplate
@@ -1048,7 +1048,9 @@ class TemplateMaxi extends ATemplate
 				this._player._visible = true;
 				
 				// If the player is not stopped
-				if (!this._stopped) {
+				// and the parameter showplayer is not set to "always"
+				// then activate the hide timeout
+				if (!this._stopped && this._showPlayer != "always") {
 					clearInterval(this._playerItv);
 					this._playerItv = setInterval(this, "_playerInterval", this._playerTimeout);
 				}
@@ -1628,7 +1630,7 @@ class TemplateMaxi extends ATemplate
 		
 		// Buffer message
 		var buffer:Number = Math.min(Math.round(this.controller.getBufferLength()/this.controller.getBufferTime() * 100), 100);
-		if (!this.controller.streamStarted && buffer >= this._lastBuffer && this.controller.getDuration() != undefined && buffer != 100) {
+		if (!isNaN(buffer) && !this.controller.streamStarted && buffer >= this._lastBuffer && this.controller.getDuration() != undefined && buffer != 100) {
 			var message:String = this._bufferMessage;
 			message = message.split("_n_").join(String(buffer)+"%");
 			this._buffering.message_txt.text = message;

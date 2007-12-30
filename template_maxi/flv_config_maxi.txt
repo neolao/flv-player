@@ -1,4 +1,4 @@
-flv=http://download.neolao.com/videos/KyodaiNoGilga.flv
+flv=http://flv-player.net/medias/KyodaiNoGilga.flv
 title=KyodaiNoGilga
 width=320
 height=240
