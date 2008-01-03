@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template multi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.2.2 (05/11/2007) 
+ * @version 	1.3.0 (03/01/2008) 
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMulti extends ATemplate
@@ -210,9 +210,9 @@ class TemplateMulti extends ATemplate
 	 */
 	private var _showNext:Boolean = false;
 	/**
-	 * Le bouton Open
+	 * The Open button
 	 */
-	private var _showOpen:Boolean = true;
+	private var _showOpen:Number = 1;
 	/**
 	 * Le skin
 	 */
@@ -346,6 +346,14 @@ class TemplateMulti extends ATemplate
 	 * Affichage du bouton "Close Captions"
 	 */
 	private var _showSwitchSubtitles:Boolean = false;
+	/**
+	 * Scrollbar size
+	 */
+	private var _playlistScrollbarSize:Number = 4;
+	/**
+	 * Show title background
+	 */
+	private var _showTitleBackground:String = "auto";
 	
 	
 	/*============================= CONSTRUCTEUR =============================*/
@@ -361,8 +369,8 @@ class TemplateMulti extends ATemplate
 		this._initFont();
 		this._initSubtitles();
 		this._initTitle();
-		
 		var vMarginSlider:Number = 0;
+		
 		var vSeparators:Array = [];
 		// bouton Open
 		if (this._showOpen) {
@@ -422,6 +430,16 @@ class TemplateMulti extends ATemplate
 			}
 		});
 		Stage.addListener(fullscreenListener);
+		
+		// Auto resize
+		var stageListener:Object = new Object();
+		stageListener.onResize = this.delegate(this, function () {
+			if (!this._isFullscreen) {
+				this._onStageNormal();
+			}
+		});
+		Stage.addListener(stageListener);
+		
 	}
 	/**
 	 * Lancé par mtasc
@@ -626,7 +644,7 @@ class TemplateMulti extends ATemplate
 		this._setVar("_showTime", 				[_root.showtime, pConfig.showtime], 			"Number");
 		this._setVar("_showPrevious", 			[_root.showprevious, pConfig.showprevious], 	"Boolean");
 		this._setVar("_showNext", 				[_root.shownext, pConfig.shownext], 			"Boolean");
-		this._setVar("_showOpen", 				[_root.showopen, pConfig.showopen], 			"Boolean");
+		this._setVar("_showOpen", 				[_root.showopen, pConfig.showopen], 			"Number");
 		this._setVar("_videoMargin", 			[_root.margin, pConfig.margin], 				"Number");
 		this._setVar("_subtitleColor", 			[_root.srtcolor, pConfig.srtcolor], 			"Color");
 		this._setVar("_subtitleBackgroundColor", [_root.srtbgcolor, pConfig.srtbgcolor], 		"Color");
@@ -658,6 +676,8 @@ class TemplateMulti extends ATemplate
 		this._setVar("_showFullscreen", 	    [_root.showfullscreen, pConfig.showfullscreen], "Boolean");
 		this._setVar("_playOnLoad", 	    	[_root.playonload, pConfig.playonload], 		"Boolean");
 		this._setVar("_showSwitchSubtitles",	[_root.showswitchsubtitles, pConfig.showswitchsubtitles], "Boolean");
+		this._setVar("_playlistScrollbarSize",	[_root.scrollbarsize, pConfig.scrollbarsize], "Number");
+		this._setVar("_showTitleBackground",	[_root.showtitlebackground, pConfig.showtitlebackground], "String");
 	}
 	/**
 	 * Initialisation du buffering
@@ -675,16 +695,18 @@ class TemplateMulti extends ATemplate
 		this._buffering._visible = false;
 	}
 	/**
-	 * Initialisation du fond
+	 * Initialize the background
 	 */
 	private function _initBackground(){
-		// Le skin
+		// The skin
 		if(this._backgroundSkin != undefined){
-			// Une image de skin a été définie
+			// An image is defined
 			this._background.loadMovie(this._backgroundSkin);
 		}else{
 			var vWidth:Number = this._swfWidth;
 			var vHeight:Number = this._swfHeight;
+			
+			this._background.clear();
 			
 			// La couleur de fond fond fond si elle est définie
 			if(this._backgroundColor != undefined){ 
@@ -746,9 +768,9 @@ class TemplateMulti extends ATemplate
 		}
 		vButton.clear();
 		vButton.beginFill(0, 0);
-		vButton.lineTo(0, this.video._height);
-		vButton.lineTo(this.video._width, this.video._height);
-		vButton.lineTo(this.video._width, 0);
+		vButton.lineTo(0, this._swfHeight - this._videoMargin*2);
+		vButton.lineTo(this._swfWidth - this._videoMargin*2, this._swfHeight - this._videoMargin*2);
+		vButton.lineTo(this._swfWidth - this._videoMargin*2, 0);
 		vButton.endFill();
 		vButton._xscale = vButton._xscale * (100 / this.video._xscale);
 		vButton._yscale = vButton._yscale * (100 / this.video._yscale);
@@ -900,7 +922,7 @@ class TemplateMulti extends ATemplate
 		
 		// Titre
 		if (!this.video.title_txt) {
-			this.video.createTextField("title_txt", this.video.getNextHighestDepth(), 0, 0, this.video._width, 0);
+			this.video.createTextField("title_txt", this.video.getNextHighestDepth(), 0, 0, this._swfWidth - this._videoMargin*2, 0);
 		}
 		this.video.title_txt.multiline = true;
 		this.video.title_txt.wordWrap = true;
@@ -909,8 +931,8 @@ class TemplateMulti extends ATemplate
 		this.video.title_txt.text = vTitle;
 		this.video.title_txt.autoSize = "center";
 		this.video.title_txt.setTextFormat(this._titleFormat);
-		this.video.title_txt._y = this.video._height / 2 - this.video.title_txt._height / 2;
-		
+		this.video.title_txt._width = this._swfWidth;
+		this.video.title_txt._y = (this._swfHeight - this._videoMargin*2) / 2 - this.video.title_txt._height / 2;
 	}
 	/**
 	 * Initialisation du lecteur
@@ -1038,11 +1060,11 @@ class TemplateMulti extends ATemplate
 		else pButton.icon_mc._alpha = 100; 
 	}
 	/**
-	 * Initialisation du bouton playlist
+	 * Initialize the button "open playlist"
 	 */
 	private function _initPlayerPlaylist()
 	{
-		if (this._showOpen) {
+		if (this._showOpen && !this._playerPlaylist) {
 			this._playerPlaylist = this._player.createEmptyMovieClip("playlist_btn", this._player.getNextHighestDepth()); 
 			this._initButton(this._playerPlaylist);
 			
@@ -1068,20 +1090,28 @@ class TemplateMulti extends ATemplate
 			this._playerPlaylist.icon_mc._x = BUTTON_WIDTH/2 - this._playerPlaylist.icon_mc._width/2;
 		}
 		
-		this._playlist = this._playerPlaylist.createEmptyMovieClip("list_mc", this._playerPlaylist.getNextHighestDepth()); 
-		this._playlist._y -= 1;
-		this._playlist._visible = false;
+		if (!this._playlist) {
+			this._playlist = this._playerPlaylist.createEmptyMovieClip("list_mc", this._playerPlaylist.getNextHighestDepth()); 
+			this._playlist._y -= 1;
+			this._playlist._visible = false;
+			
+			// create the background panel
+			this._playlist.createEmptyMovieClip("bg_mc", this._playerPlaylist.list_mc.getNextHighestDepth());
+		}
 		
-		// panneau fond
-		var vPanelBackground:MovieClip = this._playlist.createEmptyMovieClip("bg_mc", this._playerPlaylist.list_mc.getNextHighestDepth());
-		vPanelBackground.beginFill(this._playerColor);
-		vPanelBackground.lineTo(0, -100);
-		vPanelBackground.lineTo(this.video._width, -100);
-		vPanelBackground.lineTo(this.video._width, 0);
-		vPanelBackground.endFill();
+		// fill the background panel
+		this._playlist.bg_mc.clear();
+		this._playlist.bg_mc.beginFill(this._playerColor);
+		this._playlist.bg_mc.lineTo(0, -100);
+		this._playlist.bg_mc.lineTo(this._swfWidth - this._videoMargin*2, -100);
+		this._playlist.bg_mc.lineTo(this._swfWidth - this._videoMargin*2, 0);
+		this._playlist.bg_mc.endFill();
 		
 		// Champ de test pour vérifier si un texte scrolle ou pas (je sais, c'est pas top)
-		this._playlist.createTextField("list_txt_tmp", -1, 0, -100, this.video._width - 10, 100);
+		if (!this._playlist.list_txt_tmp) {
+			this._playlist.createTextField("list_txt_tmp", -1, 0, -100, this._swfWidth - this._videoMargin*2 - this._playlistScrollbarSize, 100);
+		}
+		this._playlist.list_txt_tmp._width = this._swfWidth - this._videoMargin*2 - this._playlistScrollbarSize;
 		
 		// champ de texte
 		var totalFlv:Number = _root.flv.split("|").length;
@@ -1089,16 +1119,19 @@ class TemplateMulti extends ATemplate
 		if (version.indexOf("MAC") != -1) {
 			totalFlv += 2;
 		}
-		this._playlist.createTextField("list_txt", this._playlist.getNextHighestDepth(), 0, -100, this.video._width - 10, 100);
-		this._playlist.list_txt.multiline = true;
-		this._playlist.list_txt.wordWrap = false;
-		this._playlist.list_txt.selectable = true;
-		this._playlist.list_txt.html = true;
-		this._playlist.list_txt.textColor = 0xffffff;
-		this._playlist.list_txt.setNewTextFormat(this._playlistFormat);
-		for (var i:Number=0; i<totalFlv; i++) {
-			this._playlist.list_txt.text += i + "\n";
+		if (!this._playlist.list_txt) {
+			this._playlist.createTextField("list_txt", this._playlist.getNextHighestDepth(), 0, -100, this._swfWidth - this._videoMargin*2 - this._playlistScrollbarSize, 100);
+			this._playlist.list_txt.multiline = true;
+			this._playlist.list_txt.wordWrap = false;
+			this._playlist.list_txt.selectable = true;
+			this._playlist.list_txt.html = true;
+			this._playlist.list_txt.textColor = 0xffffff;
+			this._playlist.list_txt.setNewTextFormat(this._playlistFormat);
+			for (var i:Number=0; i<totalFlv; i++) {
+				this._playlist.list_txt.text += i + "\n";
+			}
 		}
+		this._playlist.list_txt._width = this._swfWidth - this._videoMargin*2 - this._playlistScrollbarSize;
 		
 		// asfunction
 		this._playlist.parent = this;
@@ -1115,13 +1148,16 @@ class TemplateMulti extends ATemplate
 		
 		// Scrollbar
 		if (this._playlist.list_txt.maxscroll > 1) {
-			this._playlistScrollbar = this._playlist.createEmptyMovieClip("scrollbar_mc", this._playlist.getNextHighestDepth());
+			if (!this._playlistScrollbar) {
+				this._playlistScrollbar = this._playlist.createEmptyMovieClip("scrollbar_mc", this._playlist.getNextHighestDepth());
+			}
+			this._playlistScrollbar.clear();
 			this._playlistScrollbar.beginFill(this._scrollbarColor);
-			this._playlistScrollbar.lineTo(4, 0);
-			this._playlistScrollbar.lineTo(4, 100);
+			this._playlistScrollbar.lineTo(this._playlistScrollbarSize, 0);
+			this._playlistScrollbar.lineTo(this._playlistScrollbarSize, 100);
 			this._playlistScrollbar.lineTo(0, 100);
 			this._playlistScrollbar.endFill();
-			this._playlistScrollbar._x = this.video._width - 10;
+			this._playlistScrollbar._x = this._swfWidth - this._videoMargin*2 - this._playlistScrollbarSize;
 			this._playlistScrollbar._y = -100;
 			this._playlistScrollbar._yscale = (totalFlv - this._playlist.list_txt.maxscroll + 1)/totalFlv * 100;
 			this._playlistScrollbar.max = - this._playlistScrollbar._height;
@@ -1166,6 +1202,11 @@ class TemplateMulti extends ATemplate
 		this._playlist.intervalScroll = 0;
 		this._playlist.scrollMemo = 0;
 		this._playlist.onEnterFrame = this.delegate(this, this.updatePlaylist);
+		
+		// Open the playlist the first time
+		if (this._showOpen === 2) {
+			this._playlist._visible = true;
+		}
 	}
 	/**
 	 * Initialisation du bouton Previous
@@ -1815,6 +1856,7 @@ class TemplateMulti extends ATemplate
 		this._initSubtitles();
 		
 		this._initPlayerBackground();
+		this._initPlayerPlaylist();
 		this._initPlayerSlider(this._marginSlider);
 		
 		resizeVideo();
@@ -1826,22 +1868,25 @@ class TemplateMulti extends ATemplate
 	{
 		this._isFullscreen = false;
 		
-		this._player._x = this._stageNormalParams.player_x;
-		this._player._y = this._stageNormalParams.player_y;
-		_root.width = this._stageNormalParams.root_width;
-		_root.height = this._stageNormalParams.root_height;
-		this._swfWidth = this._stageNormalParams.swfWidth;
-		this._swfHeight = this._stageNormalParams.swfHeight;
-		this._videoMargin = this._stageNormalParams.videoMargin;
+		this._videoMargin = (_root.margin === undefined)?5:parseInt(_root.margin, 10);
+		this._player._x = this._videoMargin;
+		this._player._y = Stage.height - PLAYER_HEIGHT - this._videoMargin;
+		_root.width = Stage.width;
+		_root.height = Stage.height;
+		this._swfWidth = Stage.width;
+		this._swfHeight = Stage.height;
 		
 		this._initFlash();
+		this._initBackground();
 		this._initTitle();
 		this._initSubtitles();
 		this._initVideo();
 		this._initPlayerBackground();
+		this._initPlayerPlaylist();
 		this._initPlayerSlider(this._marginSlider);
 		
 		resizeVideo();
+		
 	}
 	/*===================== FIN = METHODES PRIVEES = FIN =====================*/
 	/*========================================================================*/
@@ -1924,7 +1969,18 @@ class TemplateMulti extends ATemplate
 		
 		super.stopRelease();
 		
-		this.video.freeze_mc._visible = (this.video.title_txt.text != "");
+		switch (this._showTitleBackground) {
+			default:
+			case "auto":
+				this.video.freeze_mc._visible = (this.video.title_txt.text != "");
+				break;
+			case "always":
+				this.video.freeze_mc._visible = true;
+				break;
+			case "never":
+				this.video.freeze_mc._visible = false;
+				break;
+		}
 		this.video.title_txt._visible = true;
 		this.video.image_mc._visible = true;
 		
@@ -1964,12 +2020,20 @@ class TemplateMulti extends ATemplate
 				this._initTitle();
 			} else {
 				this.stopRelease();
+				if (this._showPlayer === "autohide") {
+					this._player._visible = false;
+				}
 			}
 			clearInterval(this._videoDelayItv);
 			this._videoDelayItv = setInterval(this, "playRelease", this._videoDelay);
 			this.updatePlaylist();
 		} else {
 			this.stopRelease();
+			
+			// Open the playlist at the end
+			if (this._showOpen === 2) {
+				this._playlist._visible = true;
+			}
 		}
 		
 		this._enableButton(this._playerPrevious, this.controller.hasPrevious);

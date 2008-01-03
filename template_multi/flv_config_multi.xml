@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-	<param name="flv" value="http://download.neolao.com/videos/KyodaiNoGilga.flv|http://download.neolao.com/videos/garrison.flv|http://download.neolao.com/videos/KyodaiNoGilga.flv|http://download.neolao.com/videos/garrison.flv" />
+	<param name="flv" value="http://flv-player.net/medias/KyodaiNoGilga.flv|http://flv-player.net/medias/garrison.flv|http://flv-player.net/medias/KyodaiNoGilga.flv|http://flv-player.net/medias/garrison.flv" />
 	<param name="title" value="KyodaiNoGilga|Garrison|KyodaiNoGilga|Garrison" />
 	<param name="width" value="320" />
 	<param name="height" value="240" />
