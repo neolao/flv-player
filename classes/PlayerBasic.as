@@ -316,13 +316,17 @@ class PlayerBasic
 	 * @return The position	 */
 	public function getPosition():Number
 	{
+		var pos:Number;
+		
 		if (this._ns.time > this._videoDuration) {
-			return this._videoDuration;
+			pos = this._videoDuration;
 		} else if (this._ns.time < 0) {
-			return 0;
+			pos = 0;
 		} else {
-			return this._ns.time;
+			pos = this._ns.time;
 		}
+		
+		return pos;
 	}
 	/**
 	 * Get the video duration
@@ -361,7 +365,14 @@ class PlayerBasic
 	{
 		var loaded:Number = this._ns.bytesLoaded;
 		var total:Number = this._ns.bytesTotal;
-		var percent:Number = Math.round(loaded / total * 100); 
+		var percent:Number = Math.round(loaded / total * 100);
+		
+		if (_root.netconnection != undefined) {
+			loaded = 100;
+			total = 100;
+			percent = 100;
+		}
+		 
 		return {loaded:loaded, total:total, percent:percent};
 	}
 	/*========================== END = PUBLIC = END ==========================*/
