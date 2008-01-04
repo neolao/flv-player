@@ -63,6 +63,7 @@
         <exec executable="${mtasc.dir}/${mtasc.exe}" failonerror="false">
             <arg line="-version 7 -v -keep -strict -main
             	-cp ${basedir}/classes 
+            	-cp ${template.dir} 
             	-swf ${template.dir}/player_flv_multi.swf 
             	${template.dir}/TemplateMulti.as"/>
         </exec>

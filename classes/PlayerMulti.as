@@ -236,6 +236,8 @@ class PlayerMulti extends PlayerDefault
 		}
 		if (!this._firstPlay) {
 			this._ns.play(this.playlist[this.index]);
+			_root.currentUrl = this.playlist[this.index];
+			_root.currentIndex = this.index;
 			
 			this._firstPlay = true;
 		} else {
