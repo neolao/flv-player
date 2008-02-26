@@ -401,6 +401,9 @@ class TemplateMultiBase extends ATemplate
 	/**
 	 * Icon play background alpha	 */
 	private var _showIconPlayBackgroundAlpha:Number = 75;
+	/**
+	 * Show the title and the startimage at the same time	 */
+	private var _showTitleAndStartimage:Boolean = false;
 	
 	
 	/*============================= CONSTRUCTEUR =============================*/
@@ -480,6 +483,7 @@ class TemplateMultiBase extends ATemplate
 		this._setVar("_showIconPlayColor", 		[_root.showiconplaycolor, pConfig.showiconplaycolor], 	"Color");
 		this._setVar("_showIconPlayBackgroundColor", [_root.showiconplaybgcolor, pConfig.showiconplaybgcolor], 	"Color");
 		this._setVar("_showIconPlayBackgroundAlpha", [_root.showiconplaybgalpha, pConfig.showiconplaybgalpha], 	"Number");
+		this._setVar("_showTitleAndStartimage", [_root.showtitleandstartimage, pConfig.showtitleandstartimage], 	"Boolean");
 		
 		// Initialize top containers
 		for (var i:String in _root) {

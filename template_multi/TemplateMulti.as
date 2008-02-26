@@ -569,18 +569,20 @@ class TemplateMulti extends TemplateMultiBase
 		
 		// Title
 		this.video.title_txt.removeMovieClip();
-		this.video.createEmptyMovieClip("title_txt", this.video.getNextHighestDepth());
-		this.video.title_txt.createTextField("field", this.video.getNextHighestDepth(), 0, 0, this._swfWidth - this._videoMargin*2, 0);
-		this.video.title_txt.field.multiline = true;
-		this.video.title_txt.field.wordWrap = true;
-		this.video.title_txt.field.selectable = false;
-		this.video.title_txt.field.textColor = this._titleColor;
-		this.video.title_txt.field.text = vTitle;
-		this.video.title_txt.field.autoSize = "center";
-		this.video.title_txt.field.setTextFormat(this._titleFormat);
-		this.video.title_txt.field._width = this._swfWidth;
-		this.video.title_txt._x = -this._videoMargin;
-		this.video.title_txt._y = (this._swfHeight - this._videoMargin*2) / 2 - this.video.title_txt._height / 2;
+		if (this._showTitleAndStartimage || this._startImage[this._currentIndex] == undefined) {
+			this.video.createEmptyMovieClip("title_txt", this.video.getNextHighestDepth());
+			this.video.title_txt.createTextField("field", this.video.getNextHighestDepth(), 0, 0, this._swfWidth - this._videoMargin*2, 0);
+			this.video.title_txt.field.multiline = true;
+			this.video.title_txt.field.wordWrap = true;
+			this.video.title_txt.field.selectable = false;
+			this.video.title_txt.field.textColor = this._titleColor;
+			this.video.title_txt.field.text = vTitle;
+			this.video.title_txt.field.autoSize = "center";
+			this.video.title_txt.field.setTextFormat(this._titleFormat);
+			this.video.title_txt.field._width = this._swfWidth;
+			this.video.title_txt._x = -this._videoMargin;
+			this.video.title_txt._y = (this._swfHeight - this._videoMargin*2) / 2 - this.video.title_txt._height / 2;
+		}
 		
 		// Icon play
 		if (this._showIconPlay) {
