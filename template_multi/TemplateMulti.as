@@ -595,7 +595,7 @@ class TemplateMulti extends TemplateMultiBase
 				var iconPadding:Number = 14;
 				
 				vIconPlay.moveTo(iconCorner, 0);
-				vIconPlay.beginFill(this._showIconPlayBackgroundColor, this._showIconPlayBackgroundAlpha);
+				vIconPlay.beginFill(this._iconPlayBackgroundColor, this._iconPlayBackgroundAlpha);
 				vIconPlay.lineTo(	iconWidth - iconCorner, 	0);
 				vIconPlay.curveTo(	iconWidth, 					0, 							iconWidth, 	iconCorner);
 				vIconPlay.lineTo(	iconWidth, 					iconHeight - iconCorner);
@@ -607,7 +607,7 @@ class TemplateMulti extends TemplateMultiBase
 				vIconPlay.endFill();
 				
 				vIconPlay.moveTo(iconPadding, iconPadding);
-				vIconPlay.beginFill(this._showIconPlayColor);
+				vIconPlay.beginFill(this._iconPlayColor);
 				vIconPlay.lineTo(iconPadding, iconHeight - iconPadding);
 				vIconPlay.lineTo(iconWidth - iconPadding, iconHeight / 2);
 				vIconPlay.endFill();

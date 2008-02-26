@@ -394,13 +394,13 @@ class TemplateMultiBase extends ATemplate
 	private var _showIconPlay:Boolean = false;
 	/**
 	 * Icon play color	 */
-	private var _showIconPlayColor:Number = 0xffffff;
+	private var _iconPlayColor:Number = 0xffffff;
 	/**
 	 * Icon play background color	 */
-	private var _showIconPlayBackgroundColor:Number = 0x000000;
+	private var _iconPlayBackgroundColor:Number = 0x000000;
 	/**
 	 * Icon play background alpha	 */
-	private var _showIconPlayBackgroundAlpha:Number = 75;
+	private var _iconPlayBackgroundAlpha:Number = 75;
 	/**
 	 * Show the title and the startimage at the same time	 */
 	private var _showTitleAndStartimage:Boolean = false;
@@ -480,9 +480,9 @@ class TemplateMultiBase extends ATemplate
 		this._setVar("_onDoubleClickTarget", 	[_root.ondoubleclicktarget, pConfig.ondoubleclicktarget], "String");
 		this._setVar("_showMouse", 				[_root.showmouse, pConfig.showmouse], 			"String");
 		this._setVar("_showIconPlay", 			[_root.showiconplay, pConfig.showiconplay], 	"Boolean");
-		this._setVar("_showIconPlayColor", 		[_root.showiconplaycolor, pConfig.showiconplaycolor], 	"Color");
-		this._setVar("_showIconPlayBackgroundColor", [_root.showiconplaybgcolor, pConfig.showiconplaybgcolor], 	"Color");
-		this._setVar("_showIconPlayBackgroundAlpha", [_root.showiconplaybgalpha, pConfig.showiconplaybgalpha], 	"Number");
+		this._setVar("_iconPlayColor", 			[_root.iconplaycolor, pConfig.iconplaycolor], 	"Color");
+		this._setVar("_iconPlayBackgroundColor", [_root.iconplaybgcolor, pConfig.iconplaybgcolor], 	"Color");
+		this._setVar("_iconPlayBackgroundAlpha", [_root.iconplaybgalpha, pConfig.iconplaybgalpha], 	"Number");
 		this._setVar("_showTitleAndStartimage", [_root.showtitleandstartimage, pConfig.showtitleandstartimage], 	"Boolean");
 		
 		// Initialize top containers
