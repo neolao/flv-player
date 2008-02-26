@@ -357,6 +357,50 @@ class TemplateMultiBase extends ATemplate
 	 * Javascript object listener
 	 */
 	private var _listener:String = "";
+	/**
+	 * The player alpha transparency
+	 */
+	private var _playerAlpha:Number = 100;
+	/**
+	 * Interval for onclick
+	 */
+	private var _onClickInterval:Number = -1;
+	/**
+	 * Action on double click
+	 * 
+	 * - "none" : do nothing
+	 * - "fullscreen" : Toggle fullscreen / normal view
+	 * - "playpause" : Toggle play / pause
+	 * - url : open new url
+	 */
+	private var _onDoubleClick:String = "none";
+	/**
+	 * The double click's target
+	 */
+	private var _onDoubleClickTarget:String = "_self";
+	/**
+	 * Mouse display type:
+	 *   - "always" : The mouse is always visible
+	 *   - "autohide" : The mouse is hidden after 1500 milliseconds
+	 *   - "never" : The mouse is never visible
+	 */
+	private var _showMouse:String = "always";
+	/**
+	 * Top containers
+	 */
+	private var _topContainers:Array;
+	/**
+	 * Show play icon	 */
+	private var _showIconPlay:Boolean = false;
+	/**
+	 * Icon play color	 */
+	private var _showIconPlayColor:Number = 0xffffff;
+	/**
+	 * Icon play background color	 */
+	private var _showIconPlayBackgroundColor:Number = 0x000000;
+	/**
+	 * Icon play background alpha	 */
+	private var _showIconPlayBackgroundAlpha:Number = 75;
 	
 	
 	/*============================= CONSTRUCTEUR =============================*/
@@ -366,13 +410,123 @@ class TemplateMultiBase extends ATemplate
 	 */
 	public function TemplateMultiBase()
 	{
+		this._topContainers = new Array();
 		super();
+		
 	}
 	/*======================= FIN = CONSTRUCTEUR = FIN =======================*/
 	/*========================================================================*/
 	
 	/*=========================== METHODES PRIVEES ===========================*/
 	/*========================================================================*/
+	/**
+	 * Initialize variables
+	 * 
+	 * @param pConfig The default config 
+	 */
+	private function _initVars(pConfig:Object)
+	{
+		super._initVars();
+		
+		this._setVar("_startImage", 			[_root.startimage, pConfig.startimage], 		"Array");
+		this._setVar("_backgroundSkin", 		[_root.skin, pConfig.skin], 					"String");
+		this._setVar("_backgroundColor", 		[_root.bgcolor, pConfig.bgcolor], 				"Color");
+		this._setVar("_backgroundColor1", 		[_root.bgcolor1, pConfig.bgcolor1], 			"Color");
+		this._setVar("_backgroundColor2", 		[_root.bgcolor2, pConfig.bgcolor2], 			"Color");
+		this._setVar("_showStop", 				[_root.showstop, pConfig.showstop], 			"Boolean");
+		this._setVar("_showVolume", 			[_root.showvolume, pConfig.showvolume], 		"Boolean");
+		this._setVar("_showTime", 				[_root.showtime, pConfig.showtime], 			"Number");
+		this._setVar("_showPrevious", 			[_root.showprevious, pConfig.showprevious], 	"Boolean");
+		this._setVar("_showNext", 				[_root.shownext, pConfig.shownext], 			"Boolean");
+		this._setVar("_showOpen", 				[_root.showopen, pConfig.showopen], 			"Number");
+		this._setVar("_videoMargin", 			[_root.margin, pConfig.margin], 				"Number");
+		this._setVar("_subtitleColor", 			[_root.srtcolor, pConfig.srtcolor], 			"Color");
+		this._setVar("_subtitleBackgroundColor", [_root.srtbgcolor, pConfig.srtbgcolor], 		"Color");
+		this._setVar("_playerColor", 			[_root.playercolor, pConfig.playercolor], 		"Color");
+		this._setVar("_buttonColor", 			[_root.buttoncolor, pConfig.buttoncolor], 		"Color");
+		this._setVar("_buttonOverColor", 		[_root.buttonovercolor, pConfig.buttonovercolor], "Color");
+		this._setVar("_sliderColor1", 			[_root.slidercolor1, pConfig.slidercolor1], 	"Color");
+		this._setVar("_sliderColor2", 			[_root.slidercolor2, pConfig.slidercolor2], 	"Color");
+		this._setVar("_sliderOverColor", 		[_root.sliderovercolor, pConfig.sliderovercolor], "Color");
+		this._setVar("_loadingColor", 			[_root.loadingcolor, pConfig.loadingcolor], 	"Color");
+		this._setVar("_scrollbarColor", 		[_root.scrollbarcolor, pConfig.scrollbarcolor], "Color");
+		this._setVar("_scrollbarOverColor", 	[_root.scrollbarovercolor, pConfig.scrollbarovercolor], "Color");
+		this._setVar("_currentFlvColor", 		[_root.currentflvcolor, pConfig.currentflvcolor], "Color");
+		this._setVar("_title", 					[_root.title, pConfig.title], 					"Array");
+		this._setVar("_titleSize", 				[_root.titlesize, pConfig.titlesize], 			"Number");
+		this._setVar("_onClick", 				[_root.onclick, pConfig.onclick], 				"String");
+		this._setVar("_onClickTarget", 			[_root.onclicktarget, pConfig.onclicktarget], 	"String");
+		this._setVar("_showPlayer", 			[_root.showplayer, pConfig.showplayer], 		"String");
+		this._setVar("_playerTimeout", 			[_root.playertimeout, pConfig.playertimeout], 	"Number");
+		this._setVar("_bufferMessage", 			[_root.buffermessage, pConfig.buffermessage], 	"String");
+		this._setVar("_videoDelay", 			[_root.videodelay, pConfig.videodelay], 		"Number");
+		this._setVar("_autoNext", 				[_root.autonext, pConfig.autonext], 			"Boolean");
+		this._setVar("_subtitleSize", 			[_root.srtsize, pConfig.srtsize], 				"Number");
+		this._setVar("_shortcut", 				[_root.shortcut, pConfig.shortcut], 			"Boolean");
+		this._setVar("_videoBackgroundColor", 	[_root.videobgcolor, pConfig.videobgcolor], 	"Color");
+		this._setVar("_titleColor", 			[_root.titlecolor, pConfig.titlecolor], 		"Color");
+		this._setVar("_playlistTextColor", 		[_root.playlisttextcolor, pConfig.playlisttextcolor], "Color");
+		this._setVar("_volume", 				[_root.volume, pConfig.volume], 				"Number");
+		this._setVar("_showFullscreen", 	    [_root.showfullscreen, pConfig.showfullscreen], "Boolean");
+		this._setVar("_playOnLoad", 	    	[_root.playonload, pConfig.playonload], 		"Boolean");
+		this._setVar("_showSwitchSubtitles",	[_root.showswitchsubtitles, pConfig.showswitchsubtitles], "Boolean");
+		this._setVar("_playlistScrollbarSize",	[_root.scrollbarsize, pConfig.scrollbarsize], 	"Number");
+		this._setVar("_showTitleBackground",	[_root.showtitlebackground, pConfig.showtitlebackground], "String");
+		this._setVar("_playerAlpha",			[_root.playeralpha, pConfig.playeralpha], 		"Number");
+		this._setVar("_onDoubleClick", 			[_root.ondoubleclick, pConfig.ondoubleclick], 	"String");
+		this._setVar("_onDoubleClickTarget", 	[_root.ondoubleclicktarget, pConfig.ondoubleclicktarget], "String");
+		this._setVar("_showMouse", 				[_root.showmouse, pConfig.showmouse], 			"String");
+		this._setVar("_showIconPlay", 			[_root.showiconplay, pConfig.showiconplay], 	"Boolean");
+		this._setVar("_showIconPlayColor", 		[_root.showiconplaycolor, pConfig.showiconplaycolor], 	"Color");
+		this._setVar("_showIconPlayBackgroundColor", [_root.showiconplaybgcolor, pConfig.showiconplaybgcolor], 	"Color");
+		this._setVar("_showIconPlayBackgroundAlpha", [_root.showiconplaybgalpha, pConfig.showiconplaybgalpha], 	"Number");
+		
+		// Initialize top containers
+		for (var i:String in _root) {
+			if (i.indexOf("top") === 0) {
+				// The parameter starts with "top"
+				var depth:Number = Number(i.substring(3));
+				var params:Array = _root[i].split("|");
+				var url:String = params[0];
+				var horizontal:String = (params[1] === undefined)?"":params[1];
+				var vertical:String = (params[2] === undefined)?"":params[2];
+				this._topContainers.push({depth:depth, url:url, verticalAlign:vertical, horizontalAlign:horizontal});
+			}
+		}
+	}
+	/**
+	 * Change general variable
+	 * 
+	 * @param pVarName The variable name
+	 * @param pList Values by priority order
+	 * @param pType The variable type: String, Number, Color ou Boolean (String by default)
+	 * @return true if the change succeed, false otherwise
+	 */
+	private function _setVar(pVarName:String, pList:Array, pType:String):Boolean
+	{
+		for (var i:Number=0; i<pList.length; i++) {
+			if (pList[i] != undefined) {
+				switch (pType) {
+					case "Number":
+						this[pVarName] = parseInt(pList[i], 10);
+						break;
+					case "Color":
+						this[pVarName] = parseInt(pList[i], 16);
+						break;
+					case "Boolean":
+						this[pVarName] = (pList[i] == "false" || pList[i] == false)?false:true;
+						break;
+					case "Array":
+						this[pVarName] = pList[i].split("|");
+						break;
+					default:
+						this[pVarName] = pList[i];
+				}
+				return true;
+			}
+		}
+		return false;
+	}
 	/*===================== FIN = METHODES PRIVEES = FIN =====================*/
 	/*========================================================================*/
 	

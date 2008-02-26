@@ -109,6 +109,14 @@ class TemplateMulti extends TemplateMultiBase
 		});
 		Stage.addListener(fullscreenListener);
 		
+		// Initialize the top container
+		_root.createEmptyMovieClip("top", _root.getNextHighestDepth());
+		
+		// Load top containers
+		for (var i:Number = 0; i < this._topContainers.length; i++) {
+			this.loadUrl(this._topContainers[i].depth, this._topContainers[i].url, this._topContainers[i].verticalAlign, this._topContainers[i].horizontalAlign);
+		}
+		
 		// Auto resize
 		var stageListener:Object = new Object();
 		stageListener.onResize = this.delegate(this, function () {
@@ -271,93 +279,6 @@ class TemplateMulti extends TemplateMultiBase
 		}
 	}
 	/**
-	 * Modification d'une variable suivant des priorités
-	 * 
-	 * @param pVarName Le nom de la variable à modifier
-	 * @param pList La liste des valeurs par ordre de priorité
-	 * @param pType Le type de la variable: String, Number, Color ou Boolean (String par défaut)
-	 * @return true si la variable a été modifié, sinon false
-	 */
-	private function _setVar(pVarName:String, pList:Array, pType:String):Boolean
-	{
-		for (var i:Number=0; i<pList.length; i++) {
-			if (pList[i] != undefined) {
-				switch (pType) {
-					case "Number":
-						this[pVarName] = parseInt(pList[i], 10);
-						break;
-					case "Color":
-						this[pVarName] = parseInt(pList[i], 16);
-						break;
-					case "Boolean":
-						this[pVarName] = (pList[i] == "false" || pList[i] == false)?false:true;
-						break;
-					case "Array":
-						this[pVarName] = pList[i].split("|");
-						break;
-					default:
-						this[pVarName] = pList[i];
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-	/**
-	 * Initialisation des variables
-	 * 
-	 * @param pConfig La configuration par défaut 
-	 */
-	private function _initVars(pConfig:Object)
-	{
-		super._initVars();
-		
-		this._setVar("_startImage", 			[_root.startimage, pConfig.startimage], 		"Array");
-		this._setVar("_backgroundSkin", 		[_root.skin, pConfig.skin], 					"String");
-		this._setVar("_backgroundColor", 		[_root.bgcolor, pConfig.bgcolor], 				"Color");
-		this._setVar("_backgroundColor1", 		[_root.bgcolor1, pConfig.bgcolor1], 			"Color");
-		this._setVar("_backgroundColor2", 		[_root.bgcolor2, pConfig.bgcolor2], 			"Color");
-		this._setVar("_showStop", 				[_root.showstop, pConfig.showstop], 			"Boolean");
-		this._setVar("_showVolume", 			[_root.showvolume, pConfig.showvolume], 		"Boolean");
-		this._setVar("_showTime", 				[_root.showtime, pConfig.showtime], 			"Number");
-		this._setVar("_showPrevious", 			[_root.showprevious, pConfig.showprevious], 	"Boolean");
-		this._setVar("_showNext", 				[_root.shownext, pConfig.shownext], 			"Boolean");
-		this._setVar("_showOpen", 				[_root.showopen, pConfig.showopen], 			"Number");
-		this._setVar("_videoMargin", 			[_root.margin, pConfig.margin], 				"Number");
-		this._setVar("_subtitleColor", 			[_root.srtcolor, pConfig.srtcolor], 			"Color");
-		this._setVar("_subtitleBackgroundColor", [_root.srtbgcolor, pConfig.srtbgcolor], 		"Color");
-		this._setVar("_playerColor", 			[_root.playercolor, pConfig.playercolor], 		"Color");
-		this._setVar("_buttonColor", 			[_root.buttoncolor, pConfig.buttoncolor], 		"Color");
-		this._setVar("_buttonOverColor", 		[_root.buttonovercolor, pConfig.buttonovercolor], "Color");
-		this._setVar("_sliderColor1", 			[_root.slidercolor1, pConfig.slidercolor1], 	"Color");
-		this._setVar("_sliderColor2", 			[_root.slidercolor2, pConfig.slidercolor2], 	"Color");
-		this._setVar("_sliderOverColor", 		[_root.sliderovercolor, pConfig.sliderovercolor], "Color");
-		this._setVar("_loadingColor", 			[_root.loadingcolor, pConfig.loadingcolor], 	"Color");
-		this._setVar("_scrollbarColor", 		[_root.scrollbarcolor, pConfig.scrollbarcolor], "Color");
-		this._setVar("_scrollbarOverColor", 	[_root.scrollbarovercolor, pConfig.scrollbarovercolor], "Color");
-		this._setVar("_currentFlvColor", 		[_root.currentflvcolor, pConfig.currentflvcolor], "Color");
-		this._setVar("_title", 					[_root.title, pConfig.title], 					"Array");
-		this._setVar("_titleSize", 				[_root.titlesize, pConfig.titlesize], 			"Number");
-		this._setVar("_onClick", 				[_root.onclick, pConfig.onclick], 				"String");
-		this._setVar("_onClickTarget", 			[_root.onclicktarget, pConfig.onclicktarget], 	"String");
-		this._setVar("_showPlayer", 			[_root.showplayer, pConfig.showplayer], 		"String");
-		this._setVar("_playerTimeout", 			[_root.playertimeout, pConfig.playertimeout], 	"Number");
-		this._setVar("_bufferMessage", 			[_root.buffermessage, pConfig.buffermessage], 	"String");
-		this._setVar("_videoDelay", 			[_root.videodelay, pConfig.videodelay], 		"Number");
-		this._setVar("_autoNext", 				[_root.autonext, pConfig.autonext], 			"Boolean");
-		this._setVar("_subtitleSize", 			[_root.srtsize, pConfig.srtsize], 				"Number");
-		this._setVar("_shortcut", 				[_root.shortcut, pConfig.shortcut], 			"Boolean");
-		this._setVar("_videoBackgroundColor", 	[_root.videobgcolor, pConfig.videobgcolor], 	"Color");
-		this._setVar("_titleColor", 			[_root.titlecolor, pConfig.titlecolor], 		"Color");
-		this._setVar("_playlistTextColor", 		[_root.playlisttextcolor, pConfig.playlisttextcolor], "Color");
-		this._setVar("_volume", 				[_root.volume, pConfig.volume], 				"Number");
-		this._setVar("_showFullscreen", 	    [_root.showfullscreen, pConfig.showfullscreen], "Boolean");
-		this._setVar("_playOnLoad", 	    	[_root.playonload, pConfig.playonload], 		"Boolean");
-		this._setVar("_showSwitchSubtitles",	[_root.showswitchsubtitles, pConfig.showswitchsubtitles], "Boolean");
-		this._setVar("_playlistScrollbarSize",	[_root.scrollbarsize, pConfig.scrollbarsize], "Number");
-		this._setVar("_showTitleBackground",	[_root.showtitlebackground, pConfig.showtitlebackground], "String");
-	}
-	/**
 	 * Initialisation du buffering
 	 */
 	private function _initBuffering(){		
@@ -453,27 +374,20 @@ class TemplateMulti extends TemplateMultiBase
 		vButton._xscale = vButton._xscale * (100 / this.video._xscale);
 		vButton._yscale = vButton._yscale * (100 / this.video._yscale);
 		vButton._height -= PLAYER_HEIGHT;
+		vButton.tabEnabled = false;
+		vButton.useHandCursor = false;
 		
-		switch (this._onClick) {
-			case "playpause":
-				vButton.onRelease = this.delegate(this, function()
-				{
-					if (this.controller.isPlaying) {
-						this.pauseRelease();
-					} else {
-						this.playRelease();
-					}
-				});
-				vButton.useHandCursor = false;
-				break;
-			case "none":
-				break;
-			default:
-				vButton.onRelease = this.delegate(this, function()
-				{
-					getURL(this._onClick, this._onClickTarget);
-				});
-		}
+		vButton.onRelease = this.delegate(this, function()
+		{
+			if (this._onClickInterval != -1) {
+				clearInterval(this._onClickInterval);
+				this._onClickInterval = -1;
+				this._videoOnDoubleClick();
+			} else {
+				clearInterval(this._onClickInterval);
+				this._onClickInterval = setInterval(this, "_videoOnClick", 180);
+			}
+		});
 		
 		// Dimension du conteneur vidéo
 		this.video._xscale = 100;
@@ -482,6 +396,53 @@ class TemplateMulti extends TemplateMultiBase
 		this.video._y = this._videoMargin;
 		
 		this._initBuffering();
+	}
+	/**
+	 * The user click on the video
+	 */
+	private function _videoOnClick()
+	{
+		// Reset onclick interval
+		clearInterval(this._onClickInterval);
+		this._onClickInterval = -1;
+		
+		// Actions
+		switch (this._onClick) {
+			case "playpause":
+				if (this.controller.isPlaying) {
+					this.pauseRelease();
+				} else {
+					this.playRelease();
+				}
+				break;
+			case "none":
+				break;
+			default:
+				getURL(this._onClick, this._onClickTarget);
+		}
+	}
+	/**
+	 * The user double click on the video
+	 */
+	private function _videoOnDoubleClick()
+	{
+		// Actions
+		switch (this._onDoubleClick) {
+			case "fullscreen":
+				this.fullscreenRelease();
+				break;
+			case "playpause":
+				if (this.controller.isPlaying) {
+					this.pauseRelease();
+				} else {
+					this.playRelease();
+				}
+				break;
+			case "none":
+				break;
+			default:
+				getURL(this._onDoubleClick, this._onDoubleClickTarget);
+		}
 	}
 	/**
 	 * Initialisation de la police
@@ -607,18 +568,51 @@ class TemplateMulti extends TemplateMultiBase
 		}
 		
 		// Title
-		if (!this.video.title_txt) {
-			this.video.createTextField("title_txt", this.video.getNextHighestDepth(), 0, 0, this._swfWidth - this._videoMargin*2, 0);
-		}
-		this.video.title_txt.multiline = true;
-		this.video.title_txt.wordWrap = true;
-		this.video.title_txt.selectable = false;
-		this.video.title_txt.textColor = this._titleColor;
-		this.video.title_txt.text = vTitle;
-		this.video.title_txt.autoSize = "center";
-		this.video.title_txt.setTextFormat(this._titleFormat);
-		this.video.title_txt._width = this._swfWidth;
+		this.video.title_txt.removeMovieClip();
+		this.video.createEmptyMovieClip("title_txt", this.video.getNextHighestDepth());
+		this.video.title_txt.createTextField("field", this.video.getNextHighestDepth(), 0, 0, this._swfWidth - this._videoMargin*2, 0);
+		this.video.title_txt.field.multiline = true;
+		this.video.title_txt.field.wordWrap = true;
+		this.video.title_txt.field.selectable = false;
+		this.video.title_txt.field.textColor = this._titleColor;
+		this.video.title_txt.field.text = vTitle;
+		this.video.title_txt.field.autoSize = "center";
+		this.video.title_txt.field.setTextFormat(this._titleFormat);
+		this.video.title_txt.field._width = this._swfWidth;
+		this.video.title_txt._x = -this._videoMargin;
 		this.video.title_txt._y = (this._swfHeight - this._videoMargin*2) / 2 - this.video.title_txt._height / 2;
+		
+		// Icon play
+		if (this._showIconPlay) {
+			this.video.iconplay_mc.removeMovieClip();
+			if (!this.video.iconplay_mc) {
+				var vIconPlay:MovieClip = this.video.createEmptyMovieClip("iconplay_mc", this.video.getNextHighestDepth());
+				var iconWidth:Number = 50;
+				var iconHeight:Number = 50;
+				var iconCorner:Number = 10;
+				var iconPadding:Number = 14;
+				
+				vIconPlay.moveTo(iconCorner, 0);
+				vIconPlay.beginFill(this._showIconPlayBackgroundColor, this._showIconPlayBackgroundAlpha);
+				vIconPlay.lineTo(	iconWidth - iconCorner, 	0);
+				vIconPlay.curveTo(	iconWidth, 					0, 							iconWidth, 	iconCorner);
+				vIconPlay.lineTo(	iconWidth, 					iconHeight - iconCorner);
+				vIconPlay.curveTo(	iconWidth, 					iconHeight, 				iconWidth - iconCorner, 	iconHeight);
+				vIconPlay.lineTo(	iconCorner, 				iconHeight);
+				vIconPlay.curveTo(	0, 							iconHeight, 				0, 							iconHeight - iconCorner);
+				vIconPlay.lineTo(	0, 							iconCorner);
+				vIconPlay.curveTo(	0, 							0, 							iconCorner, 				0);
+				vIconPlay.endFill();
+				
+				vIconPlay.moveTo(iconPadding, iconPadding);
+				vIconPlay.beginFill(this._showIconPlayColor);
+				vIconPlay.lineTo(iconPadding, iconHeight - iconPadding);
+				vIconPlay.lineTo(iconWidth - iconPadding, iconHeight / 2);
+				vIconPlay.endFill();
+			}
+			this.video.iconplay_mc._x = (this._swfWidth - this._videoMargin*2 - this.video.iconplay_mc._width) / 2;
+			this.video.iconplay_mc._y = (this._swfHeight - this._videoMargin*2 - this.video.iconplay_mc._height) / 2;
+		}
 	}
 	/**
 	 * Initialize the player
@@ -626,6 +620,10 @@ class TemplateMulti extends TemplateMultiBase
 	private function _initPlayer()
 	{
 		super._initPlayer();
+		
+		if (this._showMouse == "never") {
+			Mouse.hide();
+		}
 		
 		if (this._showPlayer !== "never") {
 			this._player._y = this._swfHeight - PLAYER_HEIGHT - this._videoMargin;
@@ -642,8 +640,17 @@ class TemplateMulti extends TemplateMultiBase
 			this._initPlayerSwitchSubtitles();
 			this._initPlayerFullscreen();
 			
+			// Open the playlist the first time
+			if (this._showOpen === 2) {
+				this._playlist._visible = true;
+			}
+			
 			this._mouse = new Object();
 			this._mouse.onMouseMove = this.delegate(this, function(){
+				if (this._showMouse != "never") {
+					Mouse.show();
+				}
+				
 				this._player._visible = true;
 				clearInterval(this._playerItv);
 				this._playerItv = setInterval(this, "_playerInterval", this._playerTimeout);
@@ -657,6 +664,9 @@ class TemplateMulti extends TemplateMultiBase
 	 */ 
 	private function _playerInterval()
 	{
+		if (this._showMouse == "autohide") {
+			Mouse.hide();
+		}
 		this._player._visible = false;
 		clearInterval(this._playerItv);
 	}
@@ -669,7 +679,7 @@ class TemplateMulti extends TemplateMultiBase
 			this._playerBackground = this._player.createEmptyMovieClip("background_mc", this._player.getNextHighestDepth()); 
 		}
 		this._playerBackground.clear();
-		this._playerBackground.beginFill(this._playerColor);
+		this._playerBackground.beginFill(this._playerColor, this._playerAlpha);
 		this._playerBackground.lineTo(0, PLAYER_HEIGHT);
 		this._playerBackground.lineTo(this.video.video._width, PLAYER_HEIGHT);
 		this._playerBackground.lineTo(this.video.video._width, 0);
@@ -888,11 +898,6 @@ class TemplateMulti extends TemplateMultiBase
 		this._playlist.intervalScroll = 0;
 		this._playlist.scrollMemo = 0;
 		this._playlist.onEnterFrame = this.delegate(this, this.updatePlaylist);
-		
-		// Open the playlist the first time
-		if (this._showOpen === 2) {
-			this._playlist._visible = true;
-		}
 	}
 	/**
 	 * Initialisation du bouton Previous
@@ -1484,6 +1489,7 @@ class TemplateMulti extends TemplateMultiBase
 		if (this.controller.isPlaying) {
 			this.video.title_txt._visible = false;
 			this.video.image_mc._visible = false;
+			this.video.iconplay_mc._visible = false;
 		}
 	}
 	/**
@@ -1619,6 +1625,7 @@ class TemplateMulti extends TemplateMultiBase
 		this.video.freeze_mc._visible = false;
 		this.video.title_txt._visible = false;
 		this.video.image_mc._visible = false;
+		this.video.iconplay_mc._visible = false;
 		
 		this._enableButton(this._playerPlay, false, true);
 		this._enableButton(this._playerPause, true);
@@ -1678,6 +1685,7 @@ class TemplateMulti extends TemplateMultiBase
 		}
 		this.video.title_txt._visible = true;
 		this.video.image_mc._visible = true;
+		this.video.iconplay_mc._visible = true;
 		
 		this._enableButton(this._playerStop, false);
 		this._enableButton(this._playerPause, false, true);
@@ -1866,6 +1874,60 @@ class TemplateMulti extends TemplateMultiBase
 	public function hideSubtitlesRelease()
 	{
 		
+	}
+	/**
+	 * Load jpg or swf on top of the video
+	 * 
+	 * @param pDepth The depth
+	 * @param pUrl The url
+	 * @param pVerticalAlign Vertical align
+	 * @param pHorizontalAlign Horizontal align
+	 */
+	public function loadUrl(pDepth:Number, pUrl:String, pVerticalAlign:String, pHorizontalAlign:String)
+	{
+		var top:MovieClip = _root.top;
+		
+		var movieContainer:MovieClip = top.createEmptyMovieClip("movie_"+pDepth, pDepth);
+		var movie:MovieClip = movieContainer.createEmptyMovieClip("mc", 1);
+		
+		movieContainer.stageListener = new Object();
+		movieContainer.stageListener.verticalAlign = pVerticalAlign;
+		movieContainer.stageListener.horizontalAlign = pHorizontalAlign;
+		movieContainer.stageListener.mc = movieContainer;
+		movieContainer.stageListener.onResize = function()
+		{
+			if (this.horizontalAlign == "") {
+				// center
+				this.mc._x = (Stage.width - this.mc._width) / 2;
+			} else if (this.horizontalAlign.charAt(0) == "-") {
+				// right align
+				this.mc._x = Stage.width - this.mc._width + Number(this.horizontalAlign);
+			} else {
+				// left align
+				this.mc._x = Number(this.horizontalAlign);
+			}
+			
+			if (this.verticalAlign == "") {
+				// center
+				this.mc._y = (Stage.height - this.mc._height) / 2;
+			} else if (this.verticalAlign.charAt(0) == "-") {
+				// bottom align
+				this.mc._y = Stage.height - this.mc._height + Number(this.verticalAlign);
+			} else {
+				// top align
+				this.mc._y = Number(this.verticalAlign);
+			}
+		};
+		Stage.addListener(movieContainer.stageListener);
+		
+		movieContainer.onEnterFrame = this.delegate(movieContainer, function()
+		{
+			if (this._width > 0) {
+				this.stageListener.onResize();
+				delete this.onEnterFrame;
+			}
+		});
+		movie.loadMovie(pUrl);
 	}
 	/*==================== FIN = METHODES PUBLIQUES = FIN ====================*/
 	/*========================================================================*/
