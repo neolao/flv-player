@@ -19,7 +19,7 @@ The Initial Developer of the Original Code is neolao (neolao@gmail.com).
  * Template multi
  * 
  * @author		neolao <neo@neolao.com> 
- * @version 	1.4.0 (04/01/2008) 
+ * @version 	1.5.0 (16/02/2008) 
  * @license		http://creativecommons.org/licenses/by-sa/3.0/deed.fr
  */ 
 class TemplateMulti extends TemplateMultiBase
@@ -572,11 +572,11 @@ class TemplateMulti extends TemplateMultiBase
 			vTitle = this._title[this._currentIndex];
 		}
 		
-		// On remplace les \n par des retours de ligne dans le titre
+		// New line fix
 		vTitle = vTitle.split("\\n").join("\n");
-		vTitle = vTitle.split("/n").join("\n"); // pour IE
+		vTitle = vTitle.split("/n").join("\n"); // for IE
 		
-		// Fond noir transparent
+		// Transparent background
 		if (this.video.freeze_mc) {
 			this.video.freeze_mc._width = this._swfWidth - this._videoMargin*2;
 			this.video.freeze_mc._height = this._swfHeight - this._videoMargin*2;
@@ -589,16 +589,24 @@ class TemplateMulti extends TemplateMultiBase
 			vFreeze.endFill();
 		}
 		
-		// Image de départ
+		// The start image
 		this.video.image_mc.removeMovieClip();
 		if(this._startImage[this._currentIndex] != undefined){
 			vImage = this.video.createEmptyMovieClip("image_mc", this.video.getNextHighestDepth());
 			vImage.loadMovie(this._startImage[this._currentIndex]);
-			vImage._xscale = 100 * (100 / this.video._xscale);
-			vImage._yscale = 100 * (100 / this.video._yscale);
+			
+			// Resize the image when its loaded
+			this.video.onEnterFrame = this.delegate(this, function()
+			{
+				if (this.video.image_mc._width > 0) {
+					this.video.image_mc._width = this.video.freeze_mc._width;
+					this.video.image_mc._height = this.video.freeze_mc._height;
+					delete this.video.onEnterFrame;
+				}
+			});
 		}
 		
-		// Titre
+		// Title
 		if (!this.video.title_txt) {
 			this.video.createTextField("title_txt", this.video.getNextHighestDepth(), 0, 0, this._swfWidth - this._videoMargin*2, 0);
 		}
@@ -613,7 +621,7 @@ class TemplateMulti extends TemplateMultiBase
 		this.video.title_txt._y = (this._swfHeight - this._videoMargin*2) / 2 - this.video.title_txt._height / 2;
 	}
 	/**
-	 * Initialisation du lecteur
+	 * Initialize the player
 	 */
 	private function _initPlayer()
 	{
@@ -1622,6 +1630,9 @@ class TemplateMulti extends TemplateMultiBase
 		
 		this.updatePlaylist(true);
 		this.controller.setVolume(this._volume);
+		
+		// hide the playlist
+		this._playlist._visible = false;
 		
 		// javascript event
 		this.sendToJavascript(this._listener+"onPlay", this._listener+"onPlay('"+this.controller.playlist[this.controller.index]+"');");
