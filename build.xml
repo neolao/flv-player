@@ -37,6 +37,7 @@
         <exec executable="${mtasc.dir}/${mtasc.exe}" failonerror="false">
             <arg line="-version 8 -v -keep -main
             	-cp ${basedir}/classes 
+            	-cp ${template.dir} 
             	-swf ${template.dir}/player_flv_maxi.swf 
             	${template.dir}/TemplateMaxi.as"/>
         </exec>

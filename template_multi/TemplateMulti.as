@@ -1676,7 +1676,7 @@ class TemplateMulti extends TemplateMultiBase
 		switch (this._showTitleBackground) {
 			default:
 			case "auto":
-				this.video.freeze_mc._visible = (this.video.title_txt.text != "");
+				this.video.freeze_mc._visible = (this.video.title_txt.field.text != "");
 				break;
 			case "always":
 				this.video.freeze_mc._visible = true;
