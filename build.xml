@@ -62,7 +62,7 @@
 			<arg line="${basedir}/base/player.swf ${template.dir}/player_flv_multi.swf"/>
     	</exec>
         <exec executable="${mtasc.dir}/${mtasc.exe}" failonerror="false">
-            <arg line="-version 7 -v -keep -strict -main
+            <arg line="-version 8 -v -keep -strict -main
             	-cp ${basedir}/classes 
             	-cp ${template.dir} 
             	-swf ${template.dir}/player_flv_multi.swf 
