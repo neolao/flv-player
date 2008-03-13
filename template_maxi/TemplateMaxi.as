@@ -1321,6 +1321,8 @@ class TemplateMaxi extends TemplateMaxiBase
 			this.video.image_mc._visible = false;
 			this.video.iconplay_mc._visible = false;
 		}
+		
+		_root.position = this.controller.getPosition() * 1000;
 	}
 	/**
 	 * Déplacement du slider
