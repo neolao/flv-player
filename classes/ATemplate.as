@@ -65,6 +65,8 @@ class ATemplate
 	 */
 	private function ATemplate()
 	{
+		System.security.allowDomain("*");
+		
 		this._initFlash();
 		this._initVars();
 		this._initKey();
