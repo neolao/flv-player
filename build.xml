@@ -2,6 +2,17 @@
 <project name="FLV Player" basedir=".">
 
     <property name="mtasc.dir" value="${basedir}/mtasc" />
+    <property name="mxmlc" value="/home/neolao/Resources/flex/flex_sdk_3/bin/mxmlc"/>
+    
+    <target name="html5" description="Build html5">
+        <exec executable="${mxmlc}" failonerror="false">
+            <arg line="-benchmark -compiler.strict
+                -output html5/bin/player_flv_html5.swf
+                -compiler.source-path=html5/src 
+                html5/src/FLVPlayer.as"/>
+        </exec>
+    </target>
+	
 
     <target name="template_default" depends="setup" description="Build template_default">
     	<property name="template.dir" value="${basedir}/template_default" />
