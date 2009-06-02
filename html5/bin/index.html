@@ -6,6 +6,21 @@
         <script language="javascript" src="jquery-1.3.2.min.js"></script>
         <script language="javascript" src="html5video_flash.js"></script>
         <script language="javascript" src="html5video_controls.js"></script>
+        <style type="text/css">
+            #output {
+                margin-left: 330px;
+            }
+            #log {
+                width: 100%;
+                height: 100px;
+            }
+            #myVideo {
+                float: left;
+            }
+            #controls {
+                clear: left;
+            }
+        </style>
     </head>
     <body>
         <video id="myVideo" src="KyodaiNoGilga.ogg">
@@ -16,6 +31,10 @@
                 <p>Alternative content.</p>
             </object>
         </video>
+        <div id="output">
+            <textarea id="log" autocomplete="off"></textarea>
+
+        </div>
         <div id="controls">
             <button id="play">Play</button>
             <button id="pause">Pause</button>
