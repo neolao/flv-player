@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>FLV Player</title>
+
+        <script language="javascript" src="jquery-1.3.2.min.js"></script>
+        <script language="javascript" src="html5video_flash.js"></script>
+        <script language="javascript" src="html5video_controls.js"></script>
+    </head>
+    <body>
+        <video id="myVideo" src="KyodaiNoGilga.ogg">
+            <object id="myVideoFlash" type="application/x-shockwave-flash" data="player_flv_html5.swf" width="320" height="240">
+                <param name="movie" value="player_flv_html5.swf"/>
+                <param name="AllowScriptAccess" value="always"/>
+                <param name="FlashVars" value="listener=video&amp;src=KyodaiNoGilga.flv"/>
+                <p>Alternative content.</p>
+            </object>
+        </video>
+        <div id="controls">
+            <button id="play">Play</button>
+            <button id="pause">Pause</button>
+        </div>
+    </body>
+</html>
