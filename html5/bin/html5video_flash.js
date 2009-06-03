@@ -1,4 +1,11 @@
 /**
+ * links:
+ * http://ejohn.org/blog/javascript-getters-and-setters/
+ * http://robertnyman.com/2009/05/28/getters-and-setters-with-javascript-code-samples-and-demos/
+ * http://annevankesteren.nl/2009/01/gettters-setters
+ */
+
+/**
  * Constructor
  */
 var FlashFLVPlayer = function(htmlElement)
@@ -27,7 +34,7 @@ var FlashFLVPlayer = function(htmlElement)
     this.currentTime = 0;
     this.startTime = 0;
     this.duration = 0;
-    this.paused = false;
+    this.paused = true;
     this.defaultPlaybackRate = 0;
     this.playbackRate = 0;
     this.played = null;
@@ -42,6 +49,19 @@ var FlashFLVPlayer = function(htmlElement)
     // Private variables
     this._flash = htmlElement;
     this._eventListeners = new Object();
+
+    // Getters / Setters
+    //this.__defineSetter__("currentTime", this.setCurrentTime);
+
+    // Default event handlers
+    this.addEventListener("play", this._playHandler);
+    this.addEventListener("pause", this._pauseHandler);
+    this.addEventListener("seeked", this._seekedHandler);
+    this.addEventListener("durationchange", this._durationchangeHandler);
+    this.addEventListener("timeupdate", this._timeupdateHandler);
+    this.addEventListener("loadedmetadata", this._loadedmetadataHandler);
+    this.addEventListener("playing", this._playingHandler);
+    this.addEventListener("ended", this._endedHandler);
 };
 FlashFLVPlayer.prototype = {
     /**
@@ -69,6 +89,7 @@ FlashFLVPlayer.prototype = {
     dispatchEvent: function(event)
     {
         var type = event.type;
+
         if (this._eventListeners[type]) {
             for (var i = 0; i < this._eventListeners[type].length; i++) {
                 this._eventListeners[type][i](event);
@@ -91,7 +112,6 @@ FlashFLVPlayer.prototype = {
     play: function()
     {
         this._flash.play();
-        this.dispatchEvent({type:"play"});
     },
 
     /**
@@ -100,7 +120,120 @@ FlashFLVPlayer.prototype = {
     pause: function()
     {
         this._flash.pause();
-        this.dispatchEvent({type:"pause"});
+    },
+
+    /**
+     * Get the currentTime
+     *
+     * @return             The value
+     */
+    getCurrentTime: function()
+    {
+        return this.currentTime;
+    },
+
+    /**
+     * Set the new currentTime
+     *
+     * @param   value      The new value
+     */
+    setCurrentTime: function(value)
+    {
+        this.currentTime = value;
+    },
+
+    /**
+     * Set the new duration
+     *
+     * @param   value      The new value
+     */
+    setDuration: function(value)
+    {
+        this.duration = value;
+    },
+
+    /**
+     * "play" event handler
+     *
+     * @param   event       The event
+     */
+    _playHandler: function(event)
+    {
+        this.paused = false;
+    },
+
+    /**
+     * "pause" event handler
+     *
+     * @param   event       The event
+     */
+    _pauseHandler: function(event)
+    {
+        this.paused = true;
+    },
+
+    /**
+     * "durationchange" event handler
+     *
+     * @param   event       The event
+     */
+    _durationchangeHandler: function(event)
+    {
+
+    },
+
+    /**
+     * "timeupdate" event handler
+     *
+     * @param   event       The event
+     */
+    _timeupdateHandler: function(event)
+    {
+
+    },
+
+    /**
+     * "loadedmetadata" event handler
+     *
+     * @param   event       The event
+     */
+    _loadedmetadataHandler: function(event)
+    {
+        this.readyState = this.HAVE_METADATA;
+    },
+
+    /**
+     * "seeked" event handler
+     *
+     * @param   event       The event
+     */
+    _seekedHandler: function(event)
+    {
+
+    },
+
+    /**
+     * "playing" event handler
+     *
+     * @param   event       The event
+     */
+    _playingHandler: function(event)
+    {
+        if (this.readyState < this.HAVE_FUTURE_DATA) {
+            this.readyState = this.HAVE_FUTURE_DATA;
+        }
+        this.paused = false;
+        this.seeking = false;
+    },
+
+    /**
+     * "ended" event handler
+     *
+     * @param   event       The event
+     */
+    _endedHandler: function(event)
+    {
+        this.ended = true;
     }
 };
 

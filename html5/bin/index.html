@@ -20,6 +20,12 @@
             #controls {
                 clear: left;
             }
+            p {
+                margin: 0;
+            }
+            .timeInput {
+                width: 3em;
+            }
         </style>
     </head>
     <body>
@@ -33,11 +39,14 @@
         </video>
         <div id="output">
             <textarea id="log" autocomplete="off"></textarea>
-
+            <p>Time: <span id="time"></span></p>
+            <p>Duration: <span id="duration"></span></p>
         </div>
         <div id="controls">
             <button id="play">Play</button>
             <button id="pause">Pause</button>
+            <button id="setCurrentTime">Set currentTime</button>
+            <input type="text" id="currentTime" value="10" class="timeInput" autocomplete="off"/>
         </div>
     </body>
 </html>

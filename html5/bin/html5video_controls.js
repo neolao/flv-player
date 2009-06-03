@@ -1,3 +1,8 @@
+var trace = function(message)
+{
+    $('#log').val($('#log').val() + message + "\n");
+    $('#log').scrollTop($('#log').height());
+};
 $('document').ready(function(){
     //video = $('#myVideo');
     video = document.getElementById('myVideo');
@@ -7,11 +12,34 @@ $('document').ready(function(){
 
     // Events
     video.addEventListener("play", function(event) {
-        $('#log').val($('#log').val() + "[event] play\n");
+        trace("[event] play");
+    });
+    video.addEventListener("ended", function(event) {
+        trace("[event] ended");
     });
     video.addEventListener("pause", function(event) {
-        $('#log').val($('#log').val() + "[event] pause\n");
+        trace("[event] pause");
     });
+    video.addEventListener("playing", function(event) {
+        trace("[event] playing");
+    });
+    video.addEventListener("seeked", function(event) {
+        trace("[event] seeked");
+    });
+    video.addEventListener("loadedmetadata", function(event) {
+        trace("[event] loadedmetadata");
+    });
+    video.addEventListener("durationchange", function(event) {
+        trace("[event] durationchange : " + video.duration);
+        $('#duration').text(video.duration);
+    });
+    video.addEventListener("timeupdate", function(event) {
+        $('#time').text(video.currentTime);
+    });
+
+
+
+
 
     $('#play').bind('click', function(event){
         video.play();
@@ -19,4 +47,9 @@ $('document').ready(function(){
     $('#pause').bind('click', function(event){
         video.pause();
     });
+    $('#setCurrentTime').bind('click', function(event){
+        video.currentTime = $('#currentTime').val();
+    });
+
+
 });

@@ -5,6 +5,8 @@ import flash.display.StageScaleMode;
 import flash.display.StageAlign;
 import flash.external.ExternalInterface;
 import flash.utils.Timer;
+import flash.events.Event;
+import flash.events.NetStatusEvent;
 import flash.events.TimerEvent;
 import flash.media.Video;
 import flash.net.NetConnection;
@@ -43,6 +45,21 @@ public class FLVPlayer extends Sprite
     protected var _firstPlay:Boolean = true;
 
     /**
+     * The current time
+     */
+    protected var _currentTime:Number = 0;
+
+    /**
+     * Indicates the player is ready
+     */
+    protected var _isReady:Boolean = false;
+
+    /**
+     * The meta data of the video
+     */
+    protected var _metaData:Object;
+
+    /**
      * Constructor
      */
     public function FLVPlayer()
@@ -62,6 +79,7 @@ public class FLVPlayer extends Sprite
         if (ExternalInterface.available) {
             ExternalInterface.addCallback("play", this._play);
             ExternalInterface.addCallback("pause", this._pause);
+            ExternalInterface.addCallback("seek", this._seek);
 
             if (this._checkJavascriptReady()) {
                 this._ready();
@@ -71,6 +89,8 @@ public class FLVPlayer extends Sprite
                 timer.start();
             }
         }
+
+        this.addEventListener(Event.ENTER_FRAME, this._enterFrameHandler);
     }
 
     /**
@@ -81,6 +101,7 @@ public class FLVPlayer extends Sprite
     protected function _checkJavascriptReady():Boolean
     {
         var isReady:Boolean = ExternalInterface.call(this._javascriptListener+".isReady");
+        this._isReady = isReady;
         return isReady;
     }
 
@@ -102,8 +123,12 @@ public class FLVPlayer extends Sprite
     protected function _ready():void
     {
         this._connection = new NetConnection();
+        this._connection.addEventListener(NetStatusEvent.NET_STATUS, this._netStatusHandler);
         this._connection.connect(null);
         this._stream = new NetStream(this._connection);
+        this._stream.addEventListener(NetStatusEvent.NET_STATUS, this._netStatusHandler);
+        this._stream.client = new Object();
+        this._stream.client.onMetaData = this._metaDataHandler;
         this._video = new Video();
         this._video.attachNetStream(this._stream);
         this.addChild(this._video);
@@ -122,6 +147,10 @@ public class FLVPlayer extends Sprite
         } else {
             this._stream.resume();
         }
+
+        var jsEvent:Object = new Object();
+        jsEvent.type = "play";
+        this._dispatchEventToJavascript(jsEvent);
     }
 
     /**
@@ -130,6 +159,136 @@ public class FLVPlayer extends Sprite
     protected function _pause():void
     {
         this._stream.pause();
+
+        var jsEvent:Object = new Object();
+        jsEvent.type = "pause";
+        this._dispatchEventToJavascript(jsEvent);
+    }
+
+    /**
+     * Seek
+     */
+    protected function _seek(offset:Number):void
+    {
+        this._stream.seek(offset);
+
+        var jsEvent:Object = new Object();
+        jsEvent.type = "seeking";
+        this._dispatchEventToJavascript(jsEvent);
+    }
+
+    /**
+     * "metaData" event handler
+     *
+     * @param   info        The info object
+     */
+    protected function _metaDataHandler(info:Object):void
+    {
+        this._metaData = info;
+
+        this._callJavascript("setDuration", info.duration);
+        var jsEvent:Object = new Object();
+        jsEvent.type = "durationchange";
+        this._dispatchEventToJavascript(jsEvent);
+
+        jsEvent = new Object();
+        jsEvent.type = "loadedmetadata";
+        this._dispatchEventToJavascript(jsEvent);
+    }
+
+    /**
+     *The enter frame event handler
+     *
+     * @param   event       The event
+     */
+    protected function _enterFrameHandler(event:Event):void
+    {
+        if (this._isReady) {
+            var jsEvent:Object;
+
+            // Time check
+            var jsCurrentTime:Number = this._callJavascript("getCurrentTime");
+            var currentTimeChanged:Boolean = false;
+            if (this._currentTime == jsCurrentTime) {
+                if (this._stream.time != this._currentTime) {
+                    currentTimeChanged = true;
+                }
+                this._currentTime = this._stream.time;
+            } else {
+                this._currentTime = jsCurrentTime;
+                this._seek(this._currentTime);
+                currentTimeChanged = true;
+            }
+            this._callJavascript("setCurrentTime", this._currentTime);
+
+            // If a new time is set, dispatch the event
+            if (currentTimeChanged) {
+                jsEvent = new Object();
+                jsEvent.type = "timeupdate";
+                this._dispatchEventToJavascript(jsEvent);
+            }
+        }
+    }
+
+    /**
+     * The net status event handler
+     *
+     * @param   event       The event
+     */
+    protected function _netStatusHandler(event:NetStatusEvent):void
+    {
+        var jsEvent:Object = new Object();
+
+        switch (event.info.code) {
+            default:
+                jsEvent.type = "unknown";
+                break;
+            case "NetStream.Play.StreamNotFound":
+                jsEvent.type = "error";
+                break;
+            case "NetStream.Play.Start":
+                jsEvent.type = "playing";
+                break;
+            case "NetStream.Play.Stop":
+                jsEvent.type = "ended";
+                break;
+            case "NetStream.Pause.Notify":
+                jsEvent.type = "pause";
+                break;
+            case "NetStream.Seek.Notify":
+                jsEvent.type = "seeked";
+                break;
+        }
+        this._dispatchEventToJavascript(jsEvent);
+        ExternalInterface.call("console.log", event.info.code);
+    }
+
+    /**
+     * Dispatch an event to javascript
+     *
+     * @param   event       The event
+     */
+    protected function _dispatchEventToJavascript(event:Object):void
+    {
+        ExternalInterface.call(this._javascriptListener + ".dispatchEvent", event);
+    }
+
+    /**
+     * Call a javascript method
+     *
+     * @param   methodName      The javascript method name
+     * @param   parameters      The parameters
+     * @return                  The method result
+     */
+    protected function _callJavascript(methodName:String, ...parameters):*
+    {
+        var jsParameters:Array = new Array();
+        jsParameters.push(this._javascriptListener + "." + methodName);
+        for each (var parameter:* in parameters) {
+            jsParameters.push(parameter);
+        }
+
+        return ExternalInterface.call.apply(ExternalInterface, jsParameters);
     }
 }
 }
