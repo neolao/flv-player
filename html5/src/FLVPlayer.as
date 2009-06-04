@@ -60,6 +60,15 @@ public class FLVPlayer extends Sprite
     protected var _metaData:Object;
 
     /**
+     * Indicates the loading data is started
+     */
+    protected var _loadStarted:Boolean = false;
+
+    /**
+     * Indicates the loading data is finished
+     */
+    protected var _loaded:Boolean = false;
+    /**
      * Constructor
      */
     public function FLVPlayer()
@@ -186,11 +195,25 @@ public class FLVPlayer extends Sprite
     {
         this._metaData = info;
 
+        // duration
         this._callJavascript("setDuration", info.duration);
         var jsEvent:Object = new Object();
         jsEvent.type = "durationchange";
         this._dispatchEventToJavascript(jsEvent);
 
+        // width
+        this._callJavascript("setVideoWidth", info.width);
+
+        // height
+        this._callJavascript("setVideoHeight", info.height);
+
+        // framerate
+        this._callJavascript("setPlaybackRate", info.framerate);
+        jsEvent = new Object();
+        jsEvent.type = "ratechange";
+        this._dispatchEventToJavascript(jsEvent);
+
+        // The metadata is loaded
         jsEvent = new Object();
         jsEvent.type = "loadedmetadata";
         this._dispatchEventToJavascript(jsEvent);
@@ -205,6 +228,31 @@ public class FLVPlayer extends Sprite
     {
         if (this._isReady) {
             var jsEvent:Object;
+
+            // event "loadstart"
+            if (!this._loadStarted && this._stream.bytesLoaded > 0) {
+                this._loadStarted = true;
+
+                jsEvent = new Object();
+                jsEvent.type = "loadstart";
+                this._dispatchEventToJavascript(jsEvent);
+            }
+
+            // event "progress"
+            if (this._loadStarted && !this._loaded) {
+                jsEvent = new Object();
+                jsEvent.type = "progress";
+                this._dispatchEventToJavascript(jsEvent);
+            }
+
+            // event "load"
+            if (!this._loaded && this._loadStarted && this._stream.bytesLoaded >= this._stream.bytesTotal) {
+                this._loaded = true;
+
+                jsEvent = new Object();
+                jsEvent.type = "load";
+                this._dispatchEventToJavascript(jsEvent);
+            }
 
             // Time check
             var jsCurrentTime:Number = this._callJavascript("getCurrentTime");
@@ -245,6 +293,7 @@ public class FLVPlayer extends Sprite
                 break;
             case "NetStream.Play.StreamNotFound":
                 jsEvent.type = "error";
+                jsEvent.code = "no_source";
                 break;
             case "NetStream.Play.Start":
                 jsEvent.type = "playing";
@@ -259,7 +308,9 @@ public class FLVPlayer extends Sprite
                 jsEvent.type = "seeked";
                 break;
         }
-        this._dispatchEventToJavascript(jsEvent);
+        if (this._loadStarted || jsEvent.type == "error") {
+            this._dispatchEventToJavascript(jsEvent);
+        }
         ExternalInterface.call("console.log", event.info.code);
     }
 

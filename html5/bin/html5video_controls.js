@@ -11,6 +11,12 @@ $('document').ready(function(){
     }
 
     // Events
+    video.addEventListener("loadstart", function(event) {
+        trace("[event] loadstart");
+    });
+    video.addEventListener("load", function(event) {
+        trace("[event] load");
+    });
     video.addEventListener("play", function(event) {
         trace("[event] play");
     });
@@ -28,6 +34,9 @@ $('document').ready(function(){
     });
     video.addEventListener("loadedmetadata", function(event) {
         trace("[event] loadedmetadata");
+        $('#videoWidth').text(video.videoWidth);
+        $('#videoHeight').text(video.videoHeight);
+        $('#playbackRate').text(video.playbackRate);
     });
     video.addEventListener("durationchange", function(event) {
         trace("[event] durationchange : " + video.duration);
@@ -35,6 +44,9 @@ $('document').ready(function(){
     });
     video.addEventListener("timeupdate", function(event) {
         $('#time').text(video.currentTime);
+    });
+    video.addEventListener("error", function(event) {
+        trace("[event] error : " + video.networkState);
     });
 
 

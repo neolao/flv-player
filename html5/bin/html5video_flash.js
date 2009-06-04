@@ -21,15 +21,19 @@ var FlashFLVPlayer = function(htmlElement)
     this.HAVE_CURRENT_DATA = 2;
     this.HAVE_FUTURE_DATA = 3;
     this.HAVE_ENOUGH_DATA = 4;
+    this.MEDIA_ERR_ABORTED = 1;
+    this.MEDIA_ERR_NETWORK = 2;
+    this.MEDIA_ERR_DECODE = 3;
+    this.MEDIA_ERR_SRC_NOT_SUPPORTED = 4;
 
     // Variables
     this.error = null;
     this.src = "";
     this.currentSrc = "";
-    this.networkState = 0;
+    this.networkState = this.NETWORK_EMPTY;
     this.autobuffer = true;
     this.buffered = null;
-    this.readyState = 0;
+    this.readyState = this.HAVE_NOTHING;
     this.seeking = false;
     this.currentTime = 0;
     this.startTime = 0;
@@ -45,6 +49,11 @@ var FlashFLVPlayer = function(htmlElement)
     this.controls = false;
     this.volume = 0;
     this.muted = false;
+    this.width = 0;
+    this.height = 0;
+    this.videoWidth = 0;
+    this.videoHeight = 0;
+    this.poster = "";
 
     // Private variables
     this._flash = htmlElement;
@@ -57,11 +66,17 @@ var FlashFLVPlayer = function(htmlElement)
     this.addEventListener("play", this._playHandler);
     this.addEventListener("pause", this._pauseHandler);
     this.addEventListener("seeked", this._seekedHandler);
+    this.addEventListener("loadstart", this._loadstartHandler);
+    this.addEventListener("progress", this._progressHandler);
+    this.addEventListener("load", this._loadHandler);
     this.addEventListener("durationchange", this._durationchangeHandler);
     this.addEventListener("timeupdate", this._timeupdateHandler);
     this.addEventListener("loadedmetadata", this._loadedmetadataHandler);
     this.addEventListener("playing", this._playingHandler);
     this.addEventListener("ended", this._endedHandler);
+    this.addEventListener("canplay", this._canplayHandler);
+    this.addEventListener("canplaythrough", this._canplaythroughHandler);
+    this.addEventListener("error", this._errorHandler);
 };
 FlashFLVPlayer.prototype = {
     /**
@@ -90,9 +105,16 @@ FlashFLVPlayer.prototype = {
     {
         var type = event.type;
 
+        // Bug: the flash continues to dispatch event after a refresh
+        if (type != "error" && type != "loadstart" && this.networkState == this.NETWORK_EMPTY) {
+            return;
+        }
+
+        // Dispatch to all listeners
+        // Quick delegate with "apply"
         if (this._eventListeners[type]) {
             for (var i = 0; i < this._eventListeners[type].length; i++) {
-                this._eventListeners[type][i](event);
+                this._eventListeners[type][i].apply(this, [event]);
             }
         }
     },
@@ -153,6 +175,38 @@ FlashFLVPlayer.prototype = {
     },
 
     /**
+     * Set the video width
+     *
+     * @param   value      The value
+     */
+    setVideoWidth: function(value)
+    {
+        this.videoWidth = value;
+    },
+
+    /**
+     * Set the video height
+     *
+     * @param   value      The value
+     */
+    setVideoHeight: function(value)
+    {
+        this.videoHeight = value;
+    },
+
+    /**
+     * Set the playback rate
+     *
+     * @param   value      The value
+     */
+    setPlaybackRate: function(value)
+    {
+        this.defaultPlaybackRate = value;
+        this.playbackRate = value;
+    },
+
+
+    /**
      * "play" event handler
      *
      * @param   event       The event
@@ -199,7 +253,9 @@ FlashFLVPlayer.prototype = {
      */
     _loadedmetadataHandler: function(event)
     {
-        this.readyState = this.HAVE_METADATA;
+        if (this.readyState < this.HAVE_METADATA) {
+            this.readyState = this.HAVE_METADATA;
+        }
     },
 
     /**
@@ -234,6 +290,80 @@ FlashFLVPlayer.prototype = {
     _endedHandler: function(event)
     {
         this.ended = true;
+    },
+
+    /**
+     * "loadstart" event handler
+     *
+     * @param   event       The event
+     */
+    _loadstartHandler: function(event)
+    {
+        this.networkState = this.NETWORK_LOADING;
+    },
+
+    /**
+     * "progress" event handler
+     *
+     * @param   event       The event
+     */
+    _progressHandler: function(event)
+    {
+        this.networkState = this.NETWORK_LOADING;
+    },
+
+    /**
+     * "load" event handler
+     *
+     * @param   event       The event
+     */
+    _loadHandler: function(event)
+    {
+        this.networkState = this.NETWORK_LOADED;
+    },
+
+    /**
+     * "canplay" event handler
+     *
+     * @param   event       The event
+     */
+    _canplayHandler: function(event)
+    {
+        if (this.readyState < this.HAVE_FUTURE_DATA) {
+            this.readyState = this.HAVE_FUTURE_DATA;
+        }
+    },
+
+    /**
+     * "canplaythrough" event handler
+     *
+     * @param   event       The event
+     */
+    _canplaythroughHandler: function(event)
+    {
+        if (this.readyState < this.HAVE_ENOUGH_DATA) {
+            this.readyState = this.HAVE_ENOUGH_DATA;
+        }
+    },
+
+    /**
+     * "error" event handler
+     *
+     * @param   event       The event
+     */
+    _errorHandler: function(event)
+    {
+        this.error = new Object();
+        switch (event.code) {
+            case "no_source":
+                this.networkState = this.NETWORK_NO_SOURCE;
+                this.error.code = this.MEDIA_ERR_SRC_NOT_SUPPORTED;
+                break;
+            default:
+                this.error.code = 0;
+        }
     }
+
+
 };
 
