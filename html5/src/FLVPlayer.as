@@ -9,6 +9,7 @@ import flash.events.Event;
 import flash.events.NetStatusEvent;
 import flash.events.TimerEvent;
 import flash.media.Video;
+import flash.media.SoundTransform;
 import flash.net.NetConnection;
 import flash.net.NetStream;
 
@@ -29,6 +30,7 @@ public class FLVPlayer extends Sprite
      * The net stream
      */
     protected var _stream:NetStream;
+
     /**
      * The video object
      */
@@ -49,6 +51,10 @@ public class FLVPlayer extends Sprite
      */
     protected var _currentTime:Number = 0;
 
+    /**
+     * The current volume
+     */
+    protected var _currentVolume:Number = 1;
     /**
      * Indicates the player is ready
      */
@@ -89,6 +95,7 @@ public class FLVPlayer extends Sprite
             ExternalInterface.addCallback("play", this._play);
             ExternalInterface.addCallback("pause", this._pause);
             ExternalInterface.addCallback("seek", this._seek);
+            ExternalInterface.addCallback("volume", this._volume);
 
             if (this._checkJavascriptReady()) {
                 this._ready();
@@ -134,13 +141,16 @@ public class FLVPlayer extends Sprite
         this._connection = new NetConnection();
         this._connection.addEventListener(NetStatusEvent.NET_STATUS, this._netStatusHandler);
         this._connection.connect(null);
+
         this._stream = new NetStream(this._connection);
         this._stream.addEventListener(NetStatusEvent.NET_STATUS, this._netStatusHandler);
         this._stream.client = new Object();
         this._stream.client.onMetaData = this._metaDataHandler;
+
         this._video = new Video();
         this._video.attachNetStream(this._stream);
         this.addChild(this._video);
+
         this._video.width = this.stage.stageWidth;
         this._video.height = this.stage.stageHeight;
     }
@@ -169,6 +179,12 @@ public class FLVPlayer extends Sprite
     {
         this._stream.pause();
 
+        // Dispatch timeupdate event
+        jsEvent = new Object();
+        jsEvent.type = "timeupdate";
+        this._dispatchEventToJavascript(jsEvent);
+
+        // Dispatch pause event
         var jsEvent:Object = new Object();
         jsEvent.type = "pause";
         this._dispatchEventToJavascript(jsEvent);
@@ -184,6 +200,16 @@ public class FLVPlayer extends Sprite
         var jsEvent:Object = new Object();
         jsEvent.type = "seeking";
         this._dispatchEventToJavascript(jsEvent);
+    }
+
+    /**
+     * Volume
+     */
+    protected function _volume(value:Number):void
+    {
+        var transform:SoundTransform = this._stream.soundTransform;
+        transform.volume = value;
+        this._stream.soundTransform = transform;
     }
 
     /**
@@ -208,10 +234,10 @@ public class FLVPlayer extends Sprite
         this._callJavascript("setVideoHeight", info.height);
 
         // framerate
-        this._callJavascript("setPlaybackRate", info.framerate);
-        jsEvent = new Object();
-        jsEvent.type = "ratechange";
-        this._dispatchEventToJavascript(jsEvent);
+        //this._callJavascript("setPlaybackRate", info.framerate);
+        //jsEvent = new Object();
+        //jsEvent.type = "ratechange";
+        //this._dispatchEventToJavascript(jsEvent);
 
         // The metadata is loaded
         jsEvent = new Object();
@@ -258,9 +284,9 @@ public class FLVPlayer extends Sprite
             var jsCurrentTime:Number = this._callJavascript("getCurrentTime");
             var currentTimeChanged:Boolean = false;
             if (this._currentTime == jsCurrentTime) {
-                if (this._stream.time != this._currentTime) {
-                    currentTimeChanged = true;
-                }
+                //if (this._stream.time != this._currentTime) {
+                //    currentTimeChanged = true;
+                //}
                 this._currentTime = this._stream.time;
             } else {
                 this._currentTime = jsCurrentTime;
@@ -273,6 +299,23 @@ public class FLVPlayer extends Sprite
             if (currentTimeChanged) {
                 jsEvent = new Object();
                 jsEvent.type = "timeupdate";
+                this._dispatchEventToJavascript(jsEvent);
+            }
+
+            // Volume check
+            var jsVolume:Number = this._callJavascript("getVolume");
+            var volumeChanged:Boolean = false;
+            if (this._currentVolume != jsVolume) {
+                this._volume(jsVolume);
+                this._currentVolume = jsVolume;
+                volumeChanged = true;
+            }
+            this._callJavascript("setVolume", this._currentVolume);
+
+            // If a new volume is set, dispatch the event
+            if (volumeChanged) {
+                jsEvent = new Object();
+                jsEvent.type = "volumeupdate";
                 this._dispatchEventToJavascript(jsEvent);
             }
         }
@@ -311,7 +354,7 @@ public class FLVPlayer extends Sprite
         if (this._loadStarted || jsEvent.type == "error") {
             this._dispatchEventToJavascript(jsEvent);
         }
-        ExternalInterface.call("console.log", event.info.code);
+        //ExternalInterface.call("console.log", event.info.code);
     }
 
     /**

@@ -3,10 +3,20 @@ var trace = function(message)
     $('#log').val($('#log').val() + message + "\n");
     $('#log').scrollTop($('#log').height());
 };
+var timeoutHandler = function()
+{
+    $('#time').text(video.currentTime);
+    $('#playbackRate').text(video.playbackRate);
+    $('#defaultPlaybackRate').text(video.defaultPlaybackRate);
+    $('#paused').text(video.paused);
+    $('#volume').text(video.volume);
+    $('#seeking').text(video.seeking);
+    setTimeout("timeoutHandler()", 100);
+};
 $('document').ready(function(){
     //video = $('#myVideo');
     video = document.getElementById('myVideo');
-    if (video.src === undefined) {
+    if (video.currentSrc === undefined) {
         video = new FlashFLVPlayer(document.getElementById('myVideoFlash'));
     }
 
@@ -36,18 +46,28 @@ $('document').ready(function(){
         trace("[event] loadedmetadata");
         $('#videoWidth').text(video.videoWidth);
         $('#videoHeight').text(video.videoHeight);
-        $('#playbackRate').text(video.playbackRate);
     });
     video.addEventListener("durationchange", function(event) {
         trace("[event] durationchange : " + video.duration);
         $('#duration').text(video.duration);
     });
     video.addEventListener("timeupdate", function(event) {
-        $('#time').text(video.currentTime);
+        trace("[event] timeupdate : " + video.currentTime);
     });
     video.addEventListener("error", function(event) {
         trace("[event] error : " + video.networkState);
     });
+    video.addEventListener("canplay", function(event) {
+        trace("[event] canplay");
+    });
+    video.addEventListener("canplaythrough", function(event) {
+        trace("[event] canplaythrough");
+    });
+    video.addEventListener("volumechange", function(event) {
+        trace("[event] volumechange : " + video.volume);
+    });
+
+
 
 
 
@@ -60,8 +80,12 @@ $('document').ready(function(){
         video.pause();
     });
     $('#setCurrentTime').bind('click', function(event){
-        video.currentTime = $('#currentTime').val();
+        video.currentTime = $('#currentTimeField').val();
+    });
+    $('#setVolume').bind('click', function(event){
+        video.volume = parseFloat( $('#volumeField').val() );
     });
 
 
+    setTimeout("timeoutHandler()", 100);
 });

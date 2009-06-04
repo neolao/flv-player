@@ -14,7 +14,7 @@
                 width: 100%;
                 height: 100px;
             }
-            #myVideo {
+            #player {
                 float: left;
             }
             #controls {
@@ -23,20 +23,36 @@
             p {
                 margin: 0;
             }
-            .timeInput {
+            .timeInput, .volumeInput {
                 width: 3em;
             }
         </style>
     </head>
     <body>
-        <video id="myVideo" src="KyodaiNoGilga.ogg">
-            <object id="myVideoFlash" type="application/x-shockwave-flash" data="player_flv_html5.swf" width="320" height="240">
-                <param name="movie" value="player_flv_html5.swf"/>
-                <param name="AllowScriptAccess" value="always"/>
-                <param name="FlashVars" value="listener=video&amp;src=KyodaiNoGilga.flv"/>
-                <p>Alternative content.</p>
-            </object>
-        </video>
+        <div id="player">
+            <video id="myVideo">
+                <source src="KyodaiNoGilga.ogg" type="video/ogg" codec="theora, vorbis"/>
+                <source src="lapin_cretin.mov"/>
+                <object id="myVideoFlash" type="application/x-shockwave-flash" data="player_flv_html5.swf" width="320" height="240">
+                    <param name="movie" value="player_flv_html5.swf"/>
+                    <param name="AllowScriptAccess" value="always"/>
+                    <param name="FlashVars" value="listener=video&amp;src=KyodaiNoGilga.flv"/>
+                    <p>Alternative content.</p>
+                </object>
+            </video>
+            <div id="controls">
+                <div>
+                    <button id="play">Play</button>
+                    <button id="pause">Pause</button>
+                </div>
+                <div>
+                    <button id="setCurrentTime">time</button>
+                    <input type="text" id="currentTimeField" value="10" class="timeInput" autocomplete="off"/>
+                    <button id="setVolume">volume</button>
+                    <input type="text" id="volumeField" value="0.5" class="volumeInput" autocomplete="off"/>
+                </div>
+            </div>
+        </div>
         <div id="output">
             <textarea id="log" autocomplete="off"></textarea>
             <p>Time: <span id="time"></span></p>
@@ -44,12 +60,10 @@
             <p>Video width: <span id="videoWidth"></span></p>
             <p>Video height: <span id="videoHeight"></span></p>
             <p>Playback rate: <span id="playbackRate"></span></p>
-        </div>
-        <div id="controls">
-            <button id="play">Play</button>
-            <button id="pause">Pause</button>
-            <button id="setCurrentTime">Set currentTime</button>
-            <input type="text" id="currentTime" value="10" class="timeInput" autocomplete="off"/>
+            <p>Default playback rate: <span id="defaultPlaybackRate"></span></p>
+            <p>Volume: <span id="volume"></span></p>
+            <p>Paused: <span id="paused"></span></p>
+            <p>Seeking: <span id="seeking"></span></p>
         </div>
     </body>
 </html>

@@ -39,15 +39,15 @@ var FlashFLVPlayer = function(htmlElement)
     this.startTime = 0;
     this.duration = 0;
     this.paused = true;
-    this.defaultPlaybackRate = 0;
-    this.playbackRate = 0;
+    this.defaultPlaybackRate = 1;
+    this.playbackRate = 1;
     this.played = null;
     this.seekable = null;
     this.ended = false;
     this.autoplay = false;
     this.loop = false;
     this.controls = false;
-    this.volume = 0;
+    this.volume = 1;
     this.muted = false;
     this.width = 0;
     this.height = 0;
@@ -70,6 +70,7 @@ var FlashFLVPlayer = function(htmlElement)
     this.addEventListener("progress", this._progressHandler);
     this.addEventListener("load", this._loadHandler);
     this.addEventListener("durationchange", this._durationchangeHandler);
+    this.addEventListener("volumechange", this._volumechangeHandler);
     this.addEventListener("timeupdate", this._timeupdateHandler);
     this.addEventListener("loadedmetadata", this._loadedmetadataHandler);
     this.addEventListener("playing", this._playingHandler);
@@ -165,6 +166,27 @@ FlashFLVPlayer.prototype = {
     },
 
     /**
+     * Get the volume
+     *
+     * @return             The value
+     */
+    getVolume: function()
+    {
+        return this.volume;
+    },
+
+    /**
+     * Set the new volume
+     *
+     * @param   value      The new value
+     */
+    setVolume: function(value)
+    {
+        this.volume = value;
+    },
+
+
+    /**
      * Set the new duration
      *
      * @param   value      The new value
@@ -232,6 +254,16 @@ FlashFLVPlayer.prototype = {
      * @param   event       The event
      */
     _durationchangeHandler: function(event)
+    {
+
+    },
+
+    /**
+     * "volumechange" event handler
+     *
+     * @param   event       The event
+     */
+    _volumechangeHandler: function(event)
     {
 
     },
