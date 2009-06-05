@@ -151,8 +151,12 @@ public class FLVPlayer extends Sprite
         this._video.attachNetStream(this._stream);
         this.addChild(this._video);
 
+        /*
         this._video.width = this.stage.stageWidth;
         this._video.height = this.stage.stageHeight;
+        this._video.width = 320;
+        this._video.height = 240;
+        */
     }
 
     /**
@@ -252,6 +256,15 @@ public class FLVPlayer extends Sprite
      */
     protected function _enterFrameHandler(event:Event):void
     {
+        // video size
+        // Sometimes, the sprite is not already added to the stage (Firefox 3.1, MacOSX)
+        // So, I wait until the stage exists and I set the video size
+        if (this.stage && (this._video.width != this.stage.stageWidth || this._video.height != this.stage.stageHeight)) {
+            this._video.width = this.stage.stageWidth;
+            this._video.height = this.stage.stageHeight;
+        }
+
+        // The javascript player is ready
         if (this._isReady) {
             var jsEvent:Object;
 

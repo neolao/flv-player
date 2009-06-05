@@ -107,7 +107,7 @@ FlashFLVPlayer.prototype = {
         var type = event.type;
 
         // Bug: the flash continues to dispatch event after a refresh
-        if (type != "error" && type != "loadstart" && this.networkState == this.NETWORK_EMPTY) {
+        if (type != "error" && type != "play" && type != "loadstart" && this.networkState == this.NETWORK_EMPTY) {
             return;
         }
 
