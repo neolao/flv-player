@@ -328,7 +328,7 @@ public class FLVPlayer extends Sprite
             // If a new volume is set, dispatch the event
             if (volumeChanged) {
                 jsEvent = new Object();
-                jsEvent.type = "volumeupdate";
+                jsEvent.type = "volumechange";
                 this._dispatchEventToJavascript(jsEvent);
             }
         }
