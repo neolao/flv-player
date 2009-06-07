@@ -14,10 +14,12 @@ var timeoutHandler = function()
     setTimeout("timeoutHandler()", 100);
 };
 $('document').ready(function(){
-    //video = $('#myVideo');
     video = document.getElementById('myVideo');
     if (video.currentSrc === undefined) {
-        video = new FlashFLVPlayer(document.getElementById('myVideoFlash'));
+        var att = { data: "player_flv_html5.swf?4", width: "320", height: "240", id: "myFlash", name: "myFlash"};
+        var params = { flashvars: "listener=video&src=KyodaiNoGilga.flv", swliveconnect: "true"};
+        flash = swfobject.createSWF(att, params, "myVideoFlash");
+        video = new FlashFLVPlayer(flash);
     }
 
     // Events
@@ -40,7 +42,7 @@ $('document').ready(function(){
         trace("[event] playing");
     });
     video.addEventListener("seeked", function(event) {
-        trace("[event] seeked");
+        //trace("[event] seeked");
     });
     video.addEventListener("loadedmetadata", function(event) {
         trace("[event] loadedmetadata");
@@ -52,7 +54,7 @@ $('document').ready(function(){
         $('#duration').text(video.duration);
     });
     video.addEventListener("timeupdate", function(event) {
-        trace("[event] timeupdate : " + video.currentTime);
+        //trace("[event] timeupdate : " + video.currentTime);
     });
     video.addEventListener("error", function(event) {
         trace("[event] error : " + video.networkState);
@@ -72,16 +74,18 @@ $('document').ready(function(){
 
 
 
-
     $('#play').bind('click', function(event){
         video.play();
     });
+
     $('#pause').bind('click', function(event){
         video.pause();
     });
+
     $('#setCurrentTime').bind('click', function(event){
         video.currentTime = $('#currentTimeField').val();
     });
+
     $('#setVolume').bind('click', function(event){
         video.volume = parseFloat( $('#volumeField').val() );
     });

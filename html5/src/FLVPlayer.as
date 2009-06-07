@@ -12,8 +12,13 @@ import flash.media.Video;
 import flash.media.SoundTransform;
 import flash.net.NetConnection;
 import flash.net.NetStream;
+import flash.system.Security;
 
+/**
+ * The FLV player
+ */
 [SWF(width="200", height="200", backgroundColor="#000000", frameRate="48")]
+[Frame(factoryClass="Preload")]
 public class FLVPlayer extends Sprite
 {
     /**
@@ -74,13 +79,21 @@ public class FLVPlayer extends Sprite
      * Indicates the loading data is finished
      */
     protected var _loaded:Boolean = false;
+
+
     /**
      * Constructor
      */
     public function FLVPlayer()
     {
         super();
+        Security.allowDomain("*");
+        this.addEventListener(Event.ADDED_TO_STAGE, this._initialize);
 
+    }
+
+    protected function _initialize(event:Event):void
+    {
         // Initialize the stage
         this.stage.scaleMode = StageScaleMode.NO_SCALE;
         this.stage.align = StageAlign.TOP_LEFT;
@@ -89,13 +102,13 @@ public class FLVPlayer extends Sprite
         var parameters:Object = this.root.loaderInfo.parameters;
         this._javascriptListener = parameters.listener;
         this._videoURL = parameters.src;
-
+        
         // Initialize external interface
         if (ExternalInterface.available) {
-            ExternalInterface.addCallback("play", this._play);
-            ExternalInterface.addCallback("pause", this._pause);
-            ExternalInterface.addCallback("seek", this._seek);
-            ExternalInterface.addCallback("volume", this._volume);
+            ExternalInterface.addCallback("flashPlay", this._play);
+            ExternalInterface.addCallback("flashPause", this._pause);
+            ExternalInterface.addCallback("flashSeek", this._seek);
+            ExternalInterface.addCallback("flashVolume", this._volume);
 
             if (this._checkJavascriptReady()) {
                 this._ready();

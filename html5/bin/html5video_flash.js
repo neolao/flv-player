@@ -129,7 +129,11 @@ FlashFLVPlayer.prototype = {
      */
     play: function()
     {
-        this._flash.play();
+        if( this._flash && typeof this._flash.flashPlay == "function") {
+            this._flash.flashPlay();
+        } else {
+            alert("Flash not ready");
+        }
     },
 
     /**
@@ -137,7 +141,11 @@ FlashFLVPlayer.prototype = {
      */
     pause: function()
     {
-        this._flash.pause();
+        if( this._flash && typeof this._flash.flashPause != "undefined") {
+            this._flash.flashPause();
+        } else {
+            alert("Flash not ready");
+        }
     },
 
     /**
