@@ -1,15 +1,10 @@
 /**
- * links:
- * http://ejohn.org/blog/javascript-getters-and-setters/
- * http://robertnyman.com/2009/05/28/getters-and-setters-with-javascript-code-samples-and-demos/
- * http://annevankesteren.nl/2009/01/gettters-setters
- */
-
-/**
  * Constructor
  */
 var FlashFLVPlayer = function(htmlElement)
 {
+    this.version = "0.1.0";
+
     // Constants
     this.NETWORK_EMPTY = 0;
     this.NETWORK_IDLE = 1;
