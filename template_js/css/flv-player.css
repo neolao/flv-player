@@ -1,0 +1,43 @@
+@CHARSET "UTF-8";
+
+#popup #slider{
+	margin-left:20px;
+	margin-right:20px;
+	width:240px;
+	display:inline-block;
+}
+
+#popup #placeholder{
+	width: 100%;
+	height: 100%;
+	line-height: 245px; /* or whatever you want, should match height in px or em*/
+  	text-align: center;
+	background-color: black;
+}
+
+#popup #myFlash{
+	background-color: black;
+}
+
+#popup #placeholder img{
+	vertical-align: middle;
+	border: none;
+}
+
+#popup a:active, #popup a:link, #popup a:visited, #popup a:focus{
+	text-decoration:none;
+	border: none;
+	outline: none;
+}
+
+#popup .glyphicon-pause, #popup .glyphicon-volume-up{
+	 display:none;
+}
+
+#popup{
+	padding:0;
+}
+
+.ui-widget-overlay {
+  background: #000;
+}

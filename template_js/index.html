@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" />
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" />
+<link href="css/flv-player.css" rel="stylesheet" />
+<title>Video List</title>
+</head>
+<body>
+<h1>Video List</h1>
+<p><a class="flvvideo" href="sampleVideos/00-0000.14-14.flv" title="Job Video">Sales-person</a></p>
+<p><a class="flvvideo" href="sampleVideos/00-0000.16-16.flv" title="Job Video">Logistics, transportation and distribution services</a></p>
+<p><a class="flvvideo" href="sampleVideos/11-2022.00-14.flv" title="Job Video">Sales Management</a></p>
+<p><a class="flvvideo" href="sampleVideos/11-3021.00-11.flv" title="Job Video">IT Manager</a></p>
+<p>Note* ... the sample videos are US department of labor job description videos</p>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script type="text/javascript" src="js/flv-player.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+	
+	jQuery(".flvvideo").flvRunner();
+});
+</script>
+</body>
+</html>
