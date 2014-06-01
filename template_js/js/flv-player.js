@@ -61,11 +61,7 @@ var myListener = {
 					'<div id="placeholder"><a href="javascript:jQuery.proxy(myListener.start, myListener)()">' +
 					'<img src="images/play.svg" /></a></div>' +
 					'<div id="video">' +
-					'<object id="myFlash" type="application/x-shockwave-flash" data="player_flv_js.swf" width="320" height="240">' +
-						'<param name="movie" value="player_flv_js.swf" />' +
-						'<param name="AllowScriptAccess" value="always" />' +
-						'<param name="FlashVars" value="listener=myListener&amp;interval=500&amp;useHandCursor=0&amp;bgcolor=0&amp;buffer=9" />' +
-					'</object>' +
+					'<div id="myFlash"></div>' +
 		            '<div id="playercontroller">' +
 	                '<a href="javascript:jQuery.proxy(myListener.play, myListener)()" ><span id="playerplay"' +
 					'class="glyphicon glyphicon-play"></span></a>' +
@@ -87,7 +83,9 @@ var myListener = {
 	    this.bChangingPosition = false;
 	    jQuery("#placeholder").show();
 	    jQuery("#video").hide();
-	    this.position = 0;
+	    swfobject.embedSWF("player_flv_js.swf", "myFlash", "320", "240", "9.0.0",
+	    	"expressInstall.swf", {listener:"myListener", interval:500, useHandCursor:0, 
+	    	bgcolor:0, buffer:9}, {movie: "player_flv_js.swf", AllowScriptAccess:"always"});
 		return false;
 	}
 };
