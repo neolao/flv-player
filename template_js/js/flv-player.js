@@ -42,7 +42,8 @@ var myListener = {
 	    swfobject.embedSWF("player_flv_js.swf", "myFlash", "320", "240", "9.0.0",
 		    	"expressInstall.swf", {listener:"myListener", interval:500, useHandCursor:0, 
 		    	bgcolor:0, buffer:9}, {movie: "player_flv_js.swf", AllowScriptAccess:"always"});
-	    setTimeout(jQuery.proxy(this.onInit, this), 100);
+	    // the init method doesn't seem to be happening anyways
+	    setTimeout(jQuery.proxy(this.onInit, this), 1000);
 	},
 	pause: function(){
 		document.getElementById("myFlash").SetVariable("method:pause", "");
