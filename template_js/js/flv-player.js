@@ -30,14 +30,17 @@ var myListener = {
 	play : function() {
 		document.getElementById("myFlash").SetVariable("method:play", "");			
 	},
-	start: function() {
-	    jQuery("#placeholder").hide();
-	    jQuery("#video").show();
+	embedSWF: function(){
 	    // doesn't work in ie11 if hidden?????
 	    swfobject.embedSWF("player_flv_js.swf", "myFlash", "320", "240", "9.0.0",
 		    	"expressInstall.swf", {listener:"myListener", interval:500, useHandCursor:0, 
 		    	bgcolor:0, buffer:9}, {movie: "player_flv_js.swf", AllowScriptAccess:"always"});
-
+		
+	},
+	start: function() {
+	    jQuery("#placeholder").hide();
+	    jQuery("#video").show();
+	    setTimeout(jQuery.proxy(this.embedSWF, this), 100);
 	},
 	pause: function(){
 		document.getElementById("myFlash").SetVariable("method:pause", "");
